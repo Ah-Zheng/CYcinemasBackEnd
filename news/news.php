@@ -8,7 +8,9 @@ $method = $_SERVER['REQUEST_METHOD'];
 $url = explode('/', rtrim($_GET['url'], '/'));
 
 switch ($method.' '.$url[0]) {
-    case 'POST test':
+    case 'POST news':
+        break;
+    case 'GET news':
         getNewsData();
         break;
     default:
@@ -16,6 +18,7 @@ switch ($method.' '.$url[0]) {
         break;
 }
 
+// 取得最新消息的所有資料
 function getNewsData()
 {
     $txt = $_POST['txt'];
