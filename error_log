@@ -1,5 +1,0 @@
-[26-Sep-2019 22:18:36 Asia/Taipei] PHP Fatal error:  Uncaught Error: Cannot pass parameter 4 by reference in /home/ahzheng/cy-cinemas.ml/news/news.php:54
-Stack trace:
-#0 /home/ahzheng/cy-cinemas.ml/news/news.php(11): addNews()
-#1 {main}
-  thrown in /home/ahzheng/cy-cinemas.ml/news/news.php on line 54
