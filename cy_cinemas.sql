@@ -13,10 +13,10 @@ USE `cy_cinemas`;
 DROP TABLE IF EXISTS `news`;
 CREATE TABLE `news` (
     `news_id` INT AUTO_INCREMENT NOT NUll,
-    `news_title` VARCHAR(50) NOT NUll,
+    `news_title` VARCHAR(25) NOT NUll,
     `news_content` TEXT NOT NUll,
-    `news_imgurl` VARCHAR(50) NOT NUll,
-    `news_date` TIMESTAMP NOT NUll,
+    `news_img_url` VARCHAR(50) NOT NUll,
+    `news_time` TIMESTAMP NOT NUll,
     PRIMARY KEY (`news_id`)
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -24,13 +24,13 @@ CREATE TABLE `news` (
 DROP TABLE IF EXISTS `members`;
 CREATE TABLE `members` (
     `members_id` INT AUTO_INCREMENT NOT NUll,
-    `members_name` VARCHAR(50) NOT NUll,
+    `members_name` VARCHAR(20) NOT NUll,
     `members_account` VARCHAR(20) NOT NUll,
-    `members_password` VARCHAR(20) NOT NUll,
+    `members_password` VARCHAR(15) NOT NUll,
     `members_email` VARCHAR(50) NOT NUll,
     `members_phone` VARCHAR(10) NOT NUll,
-    `members_wallet` INT DEFAULT 0,
-    `members_point`  INT DEFAULT 0,
+    `members_wallet` TINYINT DEFAULT 0,
+    `members_point`  TINYINT DEFAULT 0,
     PRIMARY KEY (`members_id`),
     UNIQUE KEY (`members_account`)
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
