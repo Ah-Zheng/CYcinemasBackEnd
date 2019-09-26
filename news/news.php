@@ -16,8 +16,8 @@ switch ($method.' '.$url[0]) {
     case 'POST upd':
         updateNews();
         break;
-    case 'POST del':
-        deleteNews();
+    case 'DELETE del':
+        deleteNews($url[1]);
         break;
     default:
         echo 'NO';
@@ -28,8 +28,9 @@ switch ($method.' '.$url[0]) {
 function getNewsData()
 {
     require_once '../database.php';
-    $sql = 'SELECT * FROM `news`';
+    $sql = 'SELECT * FROM `news` ORDER BY `news_time` ASC';
     $res = $conn->query($sql);
+    $data = [];
     while ($row = $res->fetch_assoc()) {
         $data[] = $row;
     }
@@ -44,12 +45,28 @@ function addNews()
     require_once '../database.php';
     $title = $_POST['title'];
     $content = $_POST['content'];
-    $sql = 'INSERT INTO `news` (`news_title`, `news_content`) VALUES (?, ?)';
+    $fileName = $_FILES['file']['name'];
+
+    $na = explode('.', rtrim($fileName, '.'));
+    uploadImg($_FILES['file'], $na[0]);
+    $normalUrl = "https://cy-cinemas.ml/uploads/news/normal/{$na[0]}.png";
+    $thumbsUrl = "https://cy-cinemas.ml/uploads/news/thumbs/{$na[0]}.png";
+
+    $sql = 'INSERT INTO `news` (`news_title`, `news_content`, `news_img_normal_url`, `news_img_thumbs_url`)
+            VALUES (?, ?, ?, ?)';
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param('ss', );
-    $data = [
-        'msg' => $txt,
-    ];
+    $stmt->bind_param('ssss', $title, $content, $normalUrl, $thumbsUrl);
+    if ($stmt->execute()) {
+        $data = [
+            'msg' => '新增成功',
+        ];
+    } else {
+        $data = [
+            'msg' => '新增失敗',
+        ];
+    }
+    $conn->close();
+
     echo json_encode($data);
 }
 
@@ -59,13 +76,13 @@ function updateNews()
 }
 
 // 刪除消息
-function deleteNews()
+function deleteNews($newsId)
 {
     require_once '../database.php';
-    $newsId = $_POST['newsId'];
+    $newsId = intval($newsId);
     $sql = 'DELETE FROM `news` WHERE `news_id` = ?';
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param('i', intval($newsId));
+    $stmt->bind_param('i', $newsId);
     if ($stmt->execute()) {
         $data = [
             'msg' => '刪除成功',

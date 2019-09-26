@@ -15,7 +15,8 @@ CREATE TABLE `news` (
     `news_id` INT AUTO_INCREMENT NOT NUll,
     `news_title` VARCHAR(25) NOT NUll,
     `news_content` TEXT NOT NUll,
-    `news_img_url` VARCHAR(50) NOT NUll,
+    `news_img_normal_url` VARCHAR(255) NOT NUll,
+    `news_img_thumbs_url` VARCHAR(255) NOT NUll,
     `news_time` TIMESTAMP NOT NUll,
     PRIMARY KEY (`news_id`)
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
