@@ -6,18 +6,18 @@ require_once '../function.php';
 $method = $_SERVER['REQUEST_METHOD'];
 $url = explode('/', rtrim($_GET['url'], '/'));
 
-switch ($method.' '.$url[0]) {
-    case 'POST add':
+switch ($method) {
+    case 'POST':
         addNews();
         break;
-    case 'GET get':
-        getNewsData();
+    case 'GET':
+        getNewsData($url[0]);
         break;
-    case 'POST upd':
+    case 'PUT':
         updateNews();
         break;
-    case 'DELETE del':
-        deleteNews($url[1]);
+    case 'DELETE':
+        deleteNews($url[0]);
         break;
     default:
         echo 'NO';
@@ -25,10 +25,15 @@ switch ($method.' '.$url[0]) {
 }
 
 // 取得最新消息的所有資料
-function getNewsData()
+function getNewsData($newsId = '')
 {
     require_once '../database.php';
-    $sql = 'SELECT * FROM `news` ORDER BY `news_time` ASC';
+    $newsId = intval($newsId);
+    if ($newsId != '') {
+        $sql = "SELECT * FROM `news` WHERE `id` = {$newsId} ORDER BY `release_time` DESC";
+    } else {
+        $sql = 'SELECT * FROM `news` ORDER BY `release_time` DESC';
+    }
     $res = $conn->query($sql);
     $data = [];
     while ($row = $res->fetch_assoc()) {
@@ -45,17 +50,21 @@ function addNews()
     require_once '../database.php';
     $title = $_POST['title'];
     $content = $_POST['content'];
-    $fileName = $_FILES['file']['name'];
+    $startTime = $_POST['startTime'];
+    $endTime = $_POST['endTime'];
+    $date = date('Ymdhis');
+    if (isset($_FILES['file'])) {
+        uploadImg($_FILES['file'], $date, 'news'); // 上傳檔案 (檔案, 修改的檔名, 資料夾名稱)
+        $normalUrl = "https://cy-cinemas.ml/uploads/news/normal/{$date}.png";
+        $thumbsUrl = "https://cy-cinemas.ml/uploads/news/thumbs/{$date}.png";
+    } else {
+        $normalUrl = '';
+        $thumbsUrl = '';
+    }
 
-    $na = explode('.', rtrim($fileName, '.'));
-    uploadImg($_FILES['file'], $na[0]);
-    $normalUrl = "https://cy-cinemas.ml/uploads/news/normal/{$na[0]}.png";
-    $thumbsUrl = "https://cy-cinemas.ml/uploads/news/thumbs/{$na[0]}.png";
-
-    $sql = 'INSERT INTO `news` (`news_title`, `news_content`, `news_img_normal_url`, `news_img_thumbs_url`)
-            VALUES (?, ?, ?, ?)';
+    $sql = 'INSERT INTO `news` (`title`, `content`, `img_normal_url`, `img_thumbs_url`, `start_time`, `end_time`) VALUES (?, ?, ?, ?, ?, ?)';
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param('ssss', $title, $content, $normalUrl, $thumbsUrl);
+    $stmt->bind_param('ssssss', $title, $content, $normalUrl, $thumbsUrl, $startTime, $endTime);
     if ($stmt->execute()) {
         $data = [
             'msg' => '新增成功',
@@ -80,8 +89,16 @@ function deleteNews($newsId)
 {
     require_once '../database.php';
     $newsId = intval($newsId);
-    $sql = 'DELETE FROM `news` WHERE `news_id` = ?';
-    $stmt = $conn->prepare($sql);
+
+    $getSql = "SELECT `img_normal_url` FROM `news` WHERE `id` = {$newsId}";
+    $res = $conn->query($getSql);
+    $row = $res->fetch_assoc();
+
+    $fileName = substr($row['img_normal_url'], -18);
+    deleteImg($fileName, 'news');
+
+    $delSql = 'DELETE FROM `news` WHERE `id` = ?';
+    $stmt = $conn->prepare($delSql);
     $stmt->bind_param('i', $newsId);
     if ($stmt->execute()) {
         $data = [

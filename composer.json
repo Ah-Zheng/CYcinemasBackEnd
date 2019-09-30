@@ -1,0 +1,14 @@
+{
+    "name": "plugin/plugin",
+    "description": "my plugin",
+    "type": "composer-plugin",
+    "authors": [
+        {
+            "name": "Jerry",
+            "email": "jerry092383@gmail.com"
+        }
+    ],
+    "require": {
+        "verot/class.upload.php": "^2.0"
+    }
+}

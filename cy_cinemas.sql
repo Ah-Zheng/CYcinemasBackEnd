@@ -17,7 +17,9 @@ CREATE TABLE `news` (
     `content` TEXT NOT NUll,
     `img_normal_url` VARCHAR(255) NOT NUll,
     `img_thumbs_url` VARCHAR(255) NOT NUll,
-    `time` TIMESTAMP NOT NUll,
+    `start_time` DATE NOT NULL,
+    `end_time` DATE NOT NULL,
+    `release_time` TIMESTAMP NOT NUll DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`)
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -46,7 +48,7 @@ CREATE TABLE `food_drinks` (
     PRIMARY KEY (`id`)
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
--- 正在上映的電影
+-- 正在上映的電影 a
 DROP TABLE IF EXISTS `movies`;
 CREATE TABLE `movies`
 (
@@ -67,7 +69,7 @@ CREATE TABLE `movies`
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 
--- 影城資訊
+-- 影城資訊 a
 DROP TABLE IF EXISTS `theaters`;
 CREATE TABLE `theaters`
 (
@@ -79,7 +81,7 @@ CREATE TABLE `theaters`
  PRIMARY KEY (`id`)
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
--- 電影時刻
+-- 電影時刻 a
 DROP TABLE IF EXISTS `movie_time`;
 CREATE TABLE `movie_time`
 (
@@ -93,7 +95,7 @@ CREATE TABLE `movie_time`
   FOREIGN KEY(`movies_encoded_id`) REFERENCES `movies`(`encoded_id`)
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
--- 電影日期
+-- 電影日期 a
 DROP TABLE IF EXISTS `movie_day`;
 CREATE TABLE `movie_day`
 (

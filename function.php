@@ -1,37 +1,52 @@
 <?php
 
-require_once 'plugin/upload/class.upload.php';
+require_once __DIR__.'/vendor/autoload.php';
+
+use Verot\Upload\Upload;
 
 // 上傳圖片
-function uploadImg($file, $name)
+function uploadImg($file, $name, $dirName)
 {
-    $pic = new Upload($file, 'zh-TW');
-    if ($pic->uploaded) {
+    $handle = new Upload($file);
+    if ($handle->uploaded) {
         // 大圖
-        $pic->file_new_name_body = $name;
-        $pic->file_overwrite = true;
-        $pic->img_resize = true;
-        $pic->image_x = 600;
-        $pic->image_y = 400;
-        $pic->image_convert = 'png';
-        $pic->image_ratio_crop = true;
-        $pic->Process('../uploads/news/normal/');
-        if (!$pic->processed) {
-            return 'error : '.$pic->error;
+        $handle->file_new_name_body = $name;
+        $handle->file_overwrite = true;
+        $handle->img_resize = true;
+        $handle->image_x = 600;
+        $handle->image_y = 400;
+        $handle->image_convert = 'png';
+        $handle->image_ratio_crop = true;
+        $handle->png_compression = 3;
+        $handle->Process("../uploads/{$dirName}/normal/");
+        if (!$handle->processed) {
+            return 'error : '.$handle->error;
         }
 
         // 縮圖
-        $pic->file_new_name_body = $name;
-        $pic->file_overwrite = true;
-        $pic->img_resize = true;
-        $pic->image_x = 300;
-        $pic->image_y = 200;
-        $pic->image_convert = 'png';
-        $pic->image_ratio_crop = true;
-        $pic->Process('../uploads/news/thumbs/');
-        if (!$pic->processed) {
-            return 'error : '.$pic->error;
+        $handle->file_new_name_body = $name;
+        $handle->file_overwrite = true;
+        $handle->img_resize = true;
+        $handle->image_x = 300;
+        $handle->image_y = 200;
+        $handle->image_convert = 'png';
+        $handle->image_ratio_crop = true;
+        $handle->png_compression = 3;
+        $handle->Process("../uploads/{$dirName}/thumbs/");
+        if (!$handle->processed) {
+            return 'error : '.$handle->error;
         }
+    }
+}
+
+// 刪除圖片
+function deleteImg($fileName, $dirName)
+{
+    if (file_exists("../uploads/{$dirName}/normal/$fileName")) {
+        unlink("../uploads/{$dirName}/normal/$fileName");
+    }
+    if (file_exists("../uploads/{$dirName}/thumbs/$fileName")) {
+        unlink("../uploads/{$dirName}/thumbs/$fileName");
     }
 }
 
