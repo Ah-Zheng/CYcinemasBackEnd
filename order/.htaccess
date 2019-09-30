@@ -1,0 +1,2 @@
+RewriteEngine on
+RewriteRule ^(.*)$ order.php?url=$1 [QSA,L]
