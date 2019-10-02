@@ -1,2 +1,2 @@
 RewriteEngine on
-RewriteRule ^(.*)$ member.php?url=$1 [QSA,L]
+RewriteRule ^(.*)$ members.php?url=$1 [QSA,L]
