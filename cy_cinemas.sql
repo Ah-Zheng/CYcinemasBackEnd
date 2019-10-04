@@ -39,8 +39,8 @@ CREATE TABLE `members` (
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- 餐點
-DROP TABLE IF EXISTS `food_drinks`;
-CREATE TABLE `food_drinks` (
+DROP TABLE IF EXISTS `meals`;
+CREATE TABLE `meals` (
     `id` INT AUTO_INCREMENT NOT NUll,
     `name` VARCHAR(20) NOT NULL,
     `size` VARCHAR(5) NOT NULL,

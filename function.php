@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__.'/vendor/autoload.php';
+require_once 'config.php';
 
 use Verot\Upload\Upload;
 
@@ -48,6 +49,17 @@ function deleteImg($fileName, $dirName)
     if (file_exists("../uploads/{$dirName}/thumbs/$fileName")) {
         unlink("../uploads/{$dirName}/thumbs/$fileName");
     }
+}
+
+function returnData($status, $msg, $error)
+{
+    $data = [
+        'status' => $status,
+        'msg' => $msg,
+        'error' => $error,
+    ];
+
+    return $data;
 }
 
 // 資料檢查
