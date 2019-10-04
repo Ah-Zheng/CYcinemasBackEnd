@@ -154,6 +154,8 @@ CREATE TABLE `order_details`
   `discounted_price` INT,
   `tickets_num` VARCHAR(30),
   `food_drinks_num` VARCHAR(30),
+  `phone` VARCHAR(10) NOT NUll,
+  `email` VARCHAR(100) NOT NUll,
   `datetime`  TIMESTAMP,
   PRIMARY KEY (`id`),
   FOREIGN KEY(`screenings_id`) REFERENCES `screenings`(`id`),
@@ -200,3 +202,6 @@ CREATE TABLE `ticket_set`
   `price` TIMESTAMP,
   PRIMARY KEY (`id`)
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+INSERT INTO tickets (name,price) VALUES ('全票',280),('優待票',280),('敬老票',140),('愛心票',140);
+INSERT INTO meals (name,size,price) VALUES ('爆米花','小',30),('爆米花','中',50),('爆米花','大',70),('可樂','中',30),('可樂','大',50)
