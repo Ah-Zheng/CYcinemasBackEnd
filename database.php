@@ -1,9 +1,14 @@
 <?php
 
-$host = 'ah-zheng.com';
-$user = 'ahzheng_cy_cinemas';
-$password = 'cy_cinemas';
-$dbName = 'ahzheng_cy_cinemas';
+// $host = 'ah-zheng.com';
+// $user = 'ahzheng_cy_cinemas';
+// $password = 'cy_cinemas';
+// $dbName = 'ahzheng_cy_cinemas';
+
+$host = 'localhost';
+$user = 'root';
+$password = '';
+$dbName = 'cy_cinemas';
 
 try {
     $conn = new mysqli($host, $user, $password, $dbName);
