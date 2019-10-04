@@ -1,0 +1,18 @@
+[04-Oct-2019 12:48:36 Asia/Taipei] PHP Notice:  Undefined index: img_normal_url in /home/ahzheng/cy-cinemas.ml/news/news.php on line 145
+[04-Oct-2019 12:48:36 Asia/Taipei] PHP Warning:  unlink(../uploads/news/normal/): Is a directory in /home/ahzheng/cy-cinemas.ml/function.php on line 47
+[04-Oct-2019 12:48:36 Asia/Taipei] PHP Warning:  unlink(../uploads/news/thumbs/): Is a directory in /home/ahzheng/cy-cinemas.ml/function.php on line 50
+[04-Oct-2019 12:48:41 Asia/Taipei] PHP Notice:  Undefined index: img_normal_url in /home/ahzheng/cy-cinemas.ml/news/news.php on line 145
+[04-Oct-2019 12:48:41 Asia/Taipei] PHP Warning:  unlink(../uploads/news/normal/): Is a directory in /home/ahzheng/cy-cinemas.ml/function.php on line 47
+[04-Oct-2019 12:48:41 Asia/Taipei] PHP Warning:  unlink(../uploads/news/thumbs/): Is a directory in /home/ahzheng/cy-cinemas.ml/function.php on line 50
+[04-Oct-2019 12:48:43 Asia/Taipei] PHP Notice:  Undefined index: img_normal_url in /home/ahzheng/cy-cinemas.ml/news/news.php on line 145
+[04-Oct-2019 12:48:43 Asia/Taipei] PHP Warning:  unlink(../uploads/news/normal/): Is a directory in /home/ahzheng/cy-cinemas.ml/function.php on line 47
+[04-Oct-2019 12:48:43 Asia/Taipei] PHP Warning:  unlink(../uploads/news/thumbs/): Is a directory in /home/ahzheng/cy-cinemas.ml/function.php on line 50
+[04-Oct-2019 12:48:46 Asia/Taipei] PHP Notice:  Undefined index: img_normal_url in /home/ahzheng/cy-cinemas.ml/news/news.php on line 145
+[04-Oct-2019 12:48:46 Asia/Taipei] PHP Warning:  unlink(../uploads/news/normal/): Is a directory in /home/ahzheng/cy-cinemas.ml/function.php on line 47
+[04-Oct-2019 12:48:46 Asia/Taipei] PHP Warning:  unlink(../uploads/news/thumbs/): Is a directory in /home/ahzheng/cy-cinemas.ml/function.php on line 50
+[04-Oct-2019 12:48:51 Asia/Taipei] PHP Notice:  Undefined index: img_normal_url in /home/ahzheng/cy-cinemas.ml/news/news.php on line 145
+[04-Oct-2019 12:48:51 Asia/Taipei] PHP Warning:  unlink(../uploads/news/normal/): Is a directory in /home/ahzheng/cy-cinemas.ml/function.php on line 47
+[04-Oct-2019 12:48:51 Asia/Taipei] PHP Warning:  unlink(../uploads/news/thumbs/): Is a directory in /home/ahzheng/cy-cinemas.ml/function.php on line 50
+[04-Oct-2019 12:48:53 Asia/Taipei] PHP Notice:  Undefined index: img_normal_url in /home/ahzheng/cy-cinemas.ml/news/news.php on line 145
+[04-Oct-2019 12:48:53 Asia/Taipei] PHP Warning:  unlink(../uploads/news/normal/): Is a directory in /home/ahzheng/cy-cinemas.ml/function.php on line 47
+[04-Oct-2019 12:48:53 Asia/Taipei] PHP Warning:  unlink(../uploads/news/thumbs/): Is a directory in /home/ahzheng/cy-cinemas.ml/function.php on line 50
