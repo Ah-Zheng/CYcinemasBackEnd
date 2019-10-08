@@ -1,0 +1,2 @@
+RewriteEngine on
+RewriteRule ^(.*)$ movies.php?url=$1 [QSA,L]

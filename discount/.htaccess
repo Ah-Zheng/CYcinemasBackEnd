@@ -1,0 +1,2 @@
+RewriteEngine on
+RewriteRule ^(.*)$ discount.php?url=$1 [QSA,L]

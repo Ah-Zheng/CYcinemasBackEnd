@@ -51,13 +51,20 @@ function deleteImg($fileName, $dirName)
     }
 }
 
-function returnData($status, $msg, $error)
+function returnData($status, $msg, $error = '')
 {
-    $data = [
-        'status' => $status,
-        'msg' => $msg,
-        'error' => $error,
-    ];
+    if ($error == '') {
+        $data = [
+            'status' => $status,
+            'msg' => $msg,
+        ];
+    } else {
+        $data = [
+            'status' => $status,
+            'msg' => $msg,
+            'error' => $error,
+        ];
+    }
 
     return $data;
 }

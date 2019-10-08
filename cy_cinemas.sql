@@ -107,6 +107,15 @@ CREATE TABLE `movie_day`
   FOREIGN KEY(`movies_encoded_id`) REFERENCES `movies`(`encoded_id`)
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
+-- 熱門電影
+DROP TABLE IF EXISTS `popular_movies`;
+CREATE TABLE `popular_movies` (
+  `id` INT AUTO_INCREMENT NOT NULL,
+  `movie_id` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`movie_id`) REFERENCES `movies`(`id`)
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
 -- 廳
 DROP TABLE IF EXISTS `courts`;
 CREATE TABLE `courts`
@@ -203,5 +212,16 @@ CREATE TABLE `ticket_set`
   PRIMARY KEY (`id`)
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
-INSERT INTO tickets (name,price) VALUES ('全票',280),('優待票',280),('敬老票',140),('愛心票',140);
-INSERT INTO meals (name,size,price) VALUES ('爆米花','小',30),('爆米花','中',50),('爆米花','大',70),('可樂','中',30),('可樂','大',50)
+-- 總價折扣
+DROP TABLE IF EXISTS `total_price_discount`;
+CREATE TABLE `total_price_discount` (
+  `id` INT AUTO_INCREMENT NOT NULL,
+  `discount` INT NOT NULL,
+  `description` TEXT NOT NULL,
+  `start_time` DATETIME NOT NULL,
+  `end_time` DATETIME NOT NULL,
+  PRIMARY KEY (`id`)
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+INSERT INTO tickets (name, price) VALUES ('全票', 280),('優待票', 280),('敬老票', 140),('愛心票', 140);
+INSERT INTO meals (name, size, price) VALUES ('爆米花', '小', 30),('爆米花', '中', 50),('爆米花', '大', 70),('可樂', '中', 30),('可樂', '大', 50)

@@ -10,39 +10,39 @@ $url = explode('/', rtrim($_GET['url'], '/'));
 
 switch ($method) {
     case 'POST':
-        addMeals();
+        if ($url == '') {
+            addMeals();
+        } else {
+            updateMeals($url['']);
+        }
         break;
     case 'GET':
         getMealsData($url[0]);
-        break;
-    case 'PUT':
-        updateMeals();
         break;
     case 'DELETE':
         deleteMeals($url[0]);
         break;
     default:
-        returnData(404, '404 NOT FOUND', STATUS_404);
+        echo json_encode(returnData(404, '404 NOT FOUND', STATUS_404));
         break;
 }
 
 // 取得餐點資料
-function getNewsData($mealsId = '')
+function getMealsData($mealsId = '')
 {
     global $conn;
     if ($mealsId == '') {
         $sql = 'SELECT * FROM `meals`';
-        $res = $conn->query($sql);
+        $stmt = $conn->prepare($sql);
+        $stmt->execute();
     } else {
         $mealsId = intval($mealsId);
-        $sql = 'SELECT * FROM `meals` WHERE `id` = ?';
-        $res = $conn->prepare($sql);
-        $res->bind_param('i', $mealsId);
+        $sql = 'SELECT * FROM `meals` WHERE `id` = :id';
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':id', $newsId);
         $res->execute();
     }
-    while ($row = $res->fetch_assoc()) {
-        $data[] = $row;
-    }
+    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     echo json_encode($data);
 }

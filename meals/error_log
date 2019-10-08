@@ -1,0 +1,8 @@
+[05-Oct-2019 16:03:49 Asia/Taipei] PHP Fatal error:  Uncaught Error: Call to undefined function getMealsData() in /home/ahzheng/cy-cinemas.ml/meals/meals.php:20
+Stack trace:
+#0 {main}
+  thrown in /home/ahzheng/cy-cinemas.ml/meals/meals.php on line 20
+[05-Oct-2019 16:03:51 Asia/Taipei] PHP Fatal error:  Uncaught Error: Call to undefined function getMealsData() in /home/ahzheng/cy-cinemas.ml/meals/meals.php:20
+Stack trace:
+#0 {main}
+  thrown in /home/ahzheng/cy-cinemas.ml/meals/meals.php on line 20
