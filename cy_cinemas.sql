@@ -147,19 +147,21 @@ CREATE TABLE `order_details`
 (
   `id` INT AUTO_INCREMENT NOT NULL,
   `screenings_id` INT,
-  `members_id` INT,
-  `num` INT,
+  `members_account` VARCHAR(20) NOT NUll DEFAULT 'Guest',
+  `courts_id` INT,
   `seat` VARCHAR(50),
   `total_price` INT,
   `discounted_price` INT,
-  `tickets_num` VARCHAR(30),
-  `food_drinks_num` VARCHAR(30),
+  `tickets_num` VARCHAR(100),
+  `meals_num` VARCHAR(100),
+  `name` VARCHAR(20) NOT NUll, 
   `phone` VARCHAR(10) NOT NUll,
   `email` VARCHAR(100) NOT NUll,
   `datetime`  TIMESTAMP,
   PRIMARY KEY (`id`),
   FOREIGN KEY(`screenings_id`) REFERENCES `screenings`(`id`),
-  FOREIGN KEY(`members_id`) REFERENCES `members`(`id`)
+  FOREIGN KEY(`courts_id`) REFERENCES `courts`(`id`),
+  FOREIGN KEY(`members_account`) REFERENCES `members`(`account`)
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- 儲值紀錄

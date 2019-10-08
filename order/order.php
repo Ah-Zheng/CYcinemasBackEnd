@@ -24,8 +24,8 @@ if($url[0]){
             getTickets();
             break;
             
-        case 'getFoodDrinks':
-            getFoodDrinks();
+        case 'getMeals':
+            getMeals();
             
             break;
         case 'getScreeingID':
@@ -106,10 +106,10 @@ function getTickets(){
     echo json_encode($data);
 }
 
-function getFoodDrinks(){
+function getMeals(){
     global $conn;
 
-    $sql = "SELECT `name`, `size`, `price` FROM `food_drinks`";
+    $sql = "SELECT `name`, `size`, `price` FROM `meals`";
     $stmt = $conn->query($sql);
     $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
     echo json_encode($data);
