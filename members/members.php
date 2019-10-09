@@ -16,10 +16,13 @@ switch ($method) {
             checkLogin();
         } elseif ($url[0] == 'showUserData') {
             getUserData();
-        }else {
+        } elseif ($url[0] == 'saveEditData') {
+            saveEditData();
+        } elseif ($url[0] == 'saveNewPwd') {
+            saveNewPwd();
+        } else {
             echo 'ERROR';
         }
-        // saveNewMember();
         break;
     case 'GET':
         // echo "GET SUCCESS, ";
@@ -27,6 +30,57 @@ switch ($method) {
         break;
     default:
         echo 'XXXX.';
+}
+
+function saveNewPwd() {
+    global $conn;
+    $nowAcc = $_POST['nowAcc'];
+    $oldPwd = $_POST['oldPwd'];
+    $newPwd = $_POST['newPwd'];
+    $sql = "SELECT `password` FROM `members` WHERE `account` = :nowAcc";
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':nowAcc', $nowAcc);
+    $stmt->execute();
+    $pwdInDb = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    // 舊帳號驗證正確 -> 進入修改密碼程序  舊帳號驗證錯誤-> 直接回傳錯誤訊息
+    if (password_verify($oldPwd, $pwdInDb['password'])) {
+        $passwordHash = password_hash($newPwd, PASSWORD_BCRYPT);
+        $sql = "UPDATE `members` SET `password` = :password WHERE `account` = :nowAcc";
+        // $sql = "INSERT INTO `members` (`password`) VALUES (:password) WHERE `account` = :nowAcc";
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':password', $passwordHash);
+        $stmt->bindParam(':nowAcc', $nowAcc);
+        
+        if ($stmt->execute()) {
+            $data = 'success';
+        } else {
+            $data = 'failed';
+        }
+    } else {
+        $data = 'failed';
+    }
+    echo json_encode($data);
+}
+
+function saveEditData() {
+    global $conn;
+    $nowAcc = $_POST['nowAcc'];
+    $newName = $_POST['newName'];
+    $newEmail = $_POST['newEmail'];
+    $newPhone = $_POST['newPhone'];
+    $sql = "UPDATE `members` SET `name` = :newName, `email` = :newEmail, `phone` = :newPhone WHERE `account` = :nowAcc";
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':newName', $newName);
+    $stmt->bindParam(':newEmail', $newEmail);
+    $stmt->bindParam(':newPhone', $newPhone);
+    $stmt->bindParam(':nowAcc', $nowAcc);
+    if ($stmt->execute()) {
+        $data = 'success';
+    } else {
+        $data = 'failed';
+    }
+    echo json_encode($data);
 }
 
 function getUserData() {
@@ -59,18 +113,19 @@ function checkLogin() {
     $accIsExist = $stmt->fetchColumn();
     if ($accIsExist == 1) {
         // 帳號正確 檢查密碼
-        $sql = "SELECT count(*) FROM `members` WHERE `account` = :account AND `password` = :password";
+        // 根據帳號抓出對應的密碼(hash後) -> 透過password_verify 將明文與密文比對 -> 相符 登入成功 不相符 登入失敗
+        $sql = "SELECT `password` FROM `members` WHERE `account` = :account";
         $stmt = $conn->prepare($sql);
         $stmt->bindParam(':account', $account);
-        $stmt->bindParam(':password', $password);
         $stmt->execute();
-        $pwdIsExist = $stmt->fetchColumn();
-        if ($pwdIsExist == 1) {
+        $pwdInDb = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        // print_r($pwdIsExist);
+        if (password_verify($password, $pwdInDb['password'])) {
             // 帳密正確 回傳使用者資料
-            $sql = "SELECT `name`,`account`,`email`,`phone` FROM `members` WHERE `account` = :account AND `password` = :password";
+            $sql = "SELECT `name`,`account`,`email`,`phone` FROM `members` WHERE `account` = :account";
             $stmt = $conn->prepare($sql);
             $stmt->bindParam(':account', $account);
-            $stmt->bindParam(':password', $password);
             $stmt->execute();
             $userData = $stmt->fetchAll(PDO::FETCH_ASSOC);
             echo json_encode($userData);
@@ -103,6 +158,7 @@ function saveNewMember() {
     $name = $_POST['name'];
     $account = $_POST['account'];
     $password = $_POST['password'];
+    $passwordHash = password_hash($password, PASSWORD_BCRYPT);
     $email = $_POST['email'];
     $phone = $_POST['phone'];
 
@@ -110,7 +166,7 @@ function saveNewMember() {
     $stmt = $conn->prepare($sql);
     $stmt->bindParam(':name', $name);
     $stmt->bindParam(':account', $account);
-    $stmt->bindParam(':password', $password);
+    $stmt->bindParam(':password', $passwordHash);
     $stmt->bindParam(':email', $email);
     $stmt->bindParam(':phone', $phone);
 
