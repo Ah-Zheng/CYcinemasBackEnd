@@ -14,6 +14,8 @@ switch ($method) {
             saveNewMember();
         } elseif ($url[0] == 'login') {
             checkLogin();
+        } elseif ($url[0] == 'showUserData') {
+            getUserData();
         }else {
             echo 'ERROR';
         }
@@ -25,6 +27,17 @@ switch ($method) {
         break;
     default:
         echo 'XXXX.';
+}
+
+function getUserData() {
+    global $conn;
+    $account = $_POST['account'];
+    $sql = "SELECT `name`,`account`,`password`,`email`,`phone` FROM `members` WHERE `account` = :account";
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':account', $account);
+    $stmt->execute();
+    $fullData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    echo json_encode($fullData);
 }
 
 function checkLogin() {
