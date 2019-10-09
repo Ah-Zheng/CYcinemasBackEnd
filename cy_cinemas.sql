@@ -156,6 +156,7 @@ CREATE TABLE `order_details`
 (
   `id` INT AUTO_INCREMENT NOT NULL,
   `screenings_id` INT,
+  `serial_number` VARCHAR(30),
   `members_account` VARCHAR(20) NOT NUll DEFAULT 'Guest',
   `courts_id` INT,
   `seat` VARCHAR(50),
