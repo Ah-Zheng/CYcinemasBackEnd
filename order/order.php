@@ -8,7 +8,7 @@ $url = explode("/",rtrim($_GET['url'],"/"));
 $method = $_SERVER['REQUEST_METHOD'];
 if($method == 'POST'){
     switch ($url[0]) {
-        case 'testSaveOrder': 
+        case 'saveOrder': 
             saveOrderDetail();
             break;
     }
