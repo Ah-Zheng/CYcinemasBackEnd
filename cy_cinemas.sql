@@ -64,6 +64,7 @@ CREATE TABLE `movies`
   `play_date` VARCHAR(20),
   `poster` TEXT,
   `trailer` TEXT,
+  `show_status` BOOLEAN,
   PRIMARY KEY (`id`),
   UNIQUE KEY (`encoded_id`)
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
