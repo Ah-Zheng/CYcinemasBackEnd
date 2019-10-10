@@ -10,6 +10,16 @@ $url = explode('/', rtrim($_GET['url'], '/'));
 
 switch ($method) {
     case 'GET':
+        if (isset($url[0]) && $url[0] == 'showMovies') {
+            getTypeMovies($url[1], intval($url[2])); // ('[ released | comingSoon ]', [ 0 | 1 ])
+            exit();
+        } elseif (isset($url[0]) && $url[0] == 'addShowMovies') {
+            setShowMovies($url[1], 1); // (movieId, 1)
+            exit();
+        } elseif (isset($url[0]) && $url[0] == 'removeShowMovies') {
+            setShowMovies($url[1], 0); // (movieId, 0)
+            exit();
+        } 
         getMovies();
         break;
     case 'POST':
@@ -33,12 +43,52 @@ function getMovies()
     echo json_encode($data);
 }
 
-// 取得上映中電影資料
-function getReleasedMovies()
+function getTypeMovies($type, $show)
 {
+    global $conn;
+    $sql = 'SELECT * FROM `movies` WHERE `show_status` = :show';
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':show', $show);
+    $stmt->execute();
+    $data = [];
+    $today = date('Y/m/d');
+    if ($type == 'released') {
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $movieDate = substr($row['play_date'], -10);
+            if (strtotime($today) - strtotime($movieDate) >= 0) {
+                $data[] = $row;
+            }
+        }
+    } else {
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $movieDate = substr($row['play_date'], -10);
+            if (strtotime($today) - strtotime($movieDate) < 0) {
+                $data[] = $row;
+            }
+        }
+    }
+
+    echo json_encode($data);
 }
 
-// 取得即將上映電影資料
-function getComingSoonMovies()
+function setShowMovies($movieId, $show)
 {
+    global $conn;
+    $movieId = intval($movieId);
+    $sql = 'UPDATE `movies` SET `show_status` = :show WHERE `id` = :movieId';
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':show', $show);
+    $stmt->bindParam(':movieId', $movieId);
+    if ($stmt->execute()) {
+        if ($show) {
+            $msg = '新增成功';
+        } else {
+            $msg = '移除成功';
+        }
+        $data = returnData(201, $msg);
+    } else {
+        $data = returnData(500, '伺服器內部問題', STATUS_500);
+    }
+
+    echo json_encode($data);
 }
