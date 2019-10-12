@@ -6,13 +6,8 @@ $url = explode("/",rtrim($_GET['url'],"/"));
 
 // ---------------saveOrder--------------------
 $method = $_SERVER['REQUEST_METHOD'];
-if($method == 'POST'){
-    switch ($url[0]) {
-        case 'saveOrder': 
-            saveOrderDetail();
-            break;
-    }
-    echo("POST error");
+if($method == 'POST'){  
+    saveOrderDetail();  
 }
 // ---------------saveOrder---------------------
 
