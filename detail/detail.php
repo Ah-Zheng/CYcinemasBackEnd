@@ -41,9 +41,8 @@ function saveOrderDetail(){
         echo json_encode($sqlData);
             break;
         case 'desc':
-            // ------------------Check Field------------------- 
-            // $sql = 'DESC `order_details`';   
-            $sql = 'DESC `news`';   
+            // ------------------Check Field-------------------    
+            $sql = 'DESC `order_details`';   
             $stmt=$conn->prepare($sql); 
             $stmt->execute();
             $sqlData = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -56,9 +55,8 @@ function saveOrderDetail(){
             break;
         case 'select':
             // ------------------SELECT-------------------
-            $ID = isset($_POST['ID'])?$_POST['ID']:0; 
-            // $sql = 'SELECT * FROM `order_details`';   
-            $sql = 'SELECT * FROM `news`';   
+            $ID = isset($_POST['ID'])?$_POST['ID']:0;    
+            $sql = 'SELECT * FROM `order_details`';   
             if($ID)
                 $sql = 'SELECT * FROM `news` WHERE `id`=:id'; 
                 // $sql = 'SELECT * FROM `order_details` WHERE `id`=:id'; 
@@ -84,14 +82,16 @@ function saveOrderDetail(){
              `seat` ,
              `total_price` ,
              `discounted_price` ,
+             `tickets_total_num` ,
              `tickets_num` ,
              `meals_num` ,
              `name` ,
              `phone` ,
              `email` ) 
-            VALUES (:a,:b,:c,:d,:e,:f,:g,:h,:i,:j,:k,:l)'; 
+            VALUES (:a,:b,:c,:d,:e,:f,:g,:m,:h,:i,:j,:k,:l)'; 
             $a=1;  //screenings_id
             $c=1;  //courts_id 
+            $tickets_total_num = 5;
             $stmt = $conn->prepare($sql); 
             $stmt->bindParam(':a',$a);
             $stmt->bindParam(':b',$list->orderNumber); 
@@ -100,6 +100,7 @@ function saveOrderDetail(){
             $stmt->bindParam(':e',$list->seat); 
             $stmt->bindParam(':f',$list->total); 
             $stmt->bindParam(':g',$list->real); 
+            $stmt->bindParam(':m',$tickets_total_num); 
             $stmt->bindParam(':h',$ticketsNum); 
             $stmt->bindParam(':i',$foodDrinksNum); 
             $stmt->bindParam(':j',$list->memberName); 
