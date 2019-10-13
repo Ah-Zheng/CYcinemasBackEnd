@@ -12,6 +12,10 @@ if($url[0]){
         case 'saveOrder':
         saveOrderDetail();
             break;
+
+        case 'getSellOut':
+        getSellOut();
+            break;
  
         default:
             break;
@@ -21,7 +25,21 @@ if($url[0]){
 }
 
 // $conn -> close();
- 
+
+function getSellOut(){
+    global $conn;
+     // ------------------SELECT-------------------
+    //  $ID = isset($_POST['ID'])?$_POST['ID']:0;    
+     $sql = 'SELECT `seat` FROM `order_details`';   
+    //  if($ID) 
+        //  $sql = 'SELECT * FROM `order_details` WHERE `id`=:id'; 
+     $stmt=$conn->prepare($sql);
+    //  if($ID)
+        //  $stmt->bindParam(':id', $ID);
+     $stmt->execute();
+     $sqlData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+     echo json_encode($sqlData); 
+}
 // ----------------saveOrderDetail---------------
 function saveOrderDetail(){ 
     global $conn;
@@ -57,9 +75,8 @@ function saveOrderDetail(){
             // ------------------SELECT-------------------
             $ID = isset($_POST['ID'])?$_POST['ID']:0;    
             $sql = 'SELECT * FROM `order_details`';   
-            if($ID)
-                $sql = 'SELECT * FROM `news` WHERE `id`=:id'; 
-                // $sql = 'SELECT * FROM `order_details` WHERE `id`=:id'; 
+            if($ID) 
+                $sql = 'SELECT * FROM `order_details` WHERE `id`=:id'; 
             $stmt=$conn->prepare($sql);
             if($ID)
                 $stmt->bindParam(':id', $ID);
