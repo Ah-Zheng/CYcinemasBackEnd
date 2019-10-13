@@ -163,6 +163,7 @@ CREATE TABLE `order_details`
   `seat` VARCHAR(50),
   `total_price` INT,
   `discounted_price` INT,
+  `tickets_total_num` INT,
   `tickets_num` VARCHAR(100),
   `meals_num` VARCHAR(100),
   `name` VARCHAR(20) NOT NUll, 
