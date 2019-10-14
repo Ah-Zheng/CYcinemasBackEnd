@@ -10,18 +10,24 @@ $url = explode('/', rtrim($_GET['url'], '/'));
 switch ($method) {
     case 'POST':
         // echo $url[0];
-        if ($url[0] == 'members') {
-            saveNewMember();
-        } elseif ($url[0] == 'login') {
-            checkLogin();
-        } elseif ($url[0] == 'showUserData') {
-            getUserData();
-        } elseif ($url[0] == 'saveEditData') {
-            saveEditData();
-        } elseif ($url[0] == 'saveNewPwd') {
-            saveNewPwd();
-        } else {
-            echo 'ERROR';
+        switch ($url[0]) {
+            case 'members':
+                saveNewMember();
+                break;
+            case 'login':
+                checkLogin();
+                break;
+            case 'showUserData':
+                getUserData();
+                break;
+            case 'saveEditData':
+                saveEditData();
+                break;
+            case 'saveNewPwd':
+                saveNewPwd();
+                break;
+            default:
+                echo 'ERROR';
         }
         break;
     case 'GET':
