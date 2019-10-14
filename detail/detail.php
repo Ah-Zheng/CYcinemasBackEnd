@@ -144,7 +144,7 @@ function saveOrderDetail(){
              `phone` ,
              `email` ) 
             VALUES (:a,:b,:c,:d,:e,:f,:g,:m,:h,:i,:j,:k,:l)'; 
-            $a=1;  //screenings_id
+            $a=$_POST['screeningID'];  //screeningID
             $c=1;  //courts_id 
             $tickets_total_num = 5;
             $stmt = $conn->prepare($sql); 
