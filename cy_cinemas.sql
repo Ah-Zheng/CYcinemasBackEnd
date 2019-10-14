@@ -32,7 +32,7 @@ CREATE TABLE `members` (
     `password` VARCHAR(100) NOT NUll,
     `email` VARCHAR(100) NOT NUll,
     `phone` VARCHAR(10) NOT NUll,
-    `wallet` TINYINT DEFAULT 0,
+    `wallet` SMALLINT DEFAULT 0,
     `point`  TINYINT DEFAULT 0,
     PRIMARY KEY (`id`),
     UNIQUE KEY (`account`)

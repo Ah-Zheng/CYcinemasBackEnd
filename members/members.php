@@ -26,6 +26,9 @@ switch ($method) {
             case 'saveNewPwd':
                 saveNewPwd();
                 break;
+            case 'showDetail':
+                showDetail();
+                break;
             default:
                 echo 'ERROR';
         }
@@ -36,6 +39,17 @@ switch ($method) {
         break;
     default:
         echo 'XXXX.';
+}
+
+function showDetail() {
+    global $conn;
+    $account = $_POST['account'];
+    $sql = "SELECT * FROM `order_details` WHERE `members_account` = :account";
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':account', $account);
+    $stmt->execute();
+    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    echo json_encode($data);
 }
 
 function saveNewPwd() {
