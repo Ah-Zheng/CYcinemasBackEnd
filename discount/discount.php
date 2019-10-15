@@ -31,6 +31,7 @@ switch ($method) {
 function getDiscountData($discountId = '')
 {
     global $conn;
+    
 }
 
 // 新增折扣

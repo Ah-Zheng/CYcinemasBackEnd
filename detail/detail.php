@@ -126,8 +126,8 @@ function saveOrderDetail(){
         // ----------------------save-----------------------
             $frontData = isset($_POST['JSONData'])?$_POST['JSONData']:'no post';
             $list = json_decode($frontData);    
-            $ticketsNum      = isset($_POST['foodData'])?$_POST['foodData']:'no post'; 
-            $foodDrinksNum   = isset($_POST['ticketData'])?$_POST['ticketData']:'no post';
+            $ticketsNum      = isset($_POST['ticketData'])?$_POST['ticketData']:'no post'; 
+            $foodDrinksNum   = isset($_POST['foodData'])?$_POST['foodData']:'no post';
             $account         = $list->accout == ""?"Guest":$list->accout;    
             $sql = 'INSERT INTO `order_details` ( 
              `screenings_id`,
