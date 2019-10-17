@@ -401,10 +401,10 @@ for($i = 1;$i<count($coming_movies);$i++){
 $insertScreenings = "INSERT INTO screenings (movies_encoded_id,movie_time_time,movie_day_date) SELECT m.encoded_id,mt.time,md.date from movie_time as mt join movie_day as md on mt.movies_encoded_id = md.movies_encoded_id join movies as m on m.encoded_id = mt.movies_encoded_id where mt.theaters_name = '國賓影城@台北長春廣場'";
 $conn->query($insertScreenings);
 
-$insertCourts = "INSERT INTO courts (seats,name) VALUES (72,'1廳'),(144,'2廳')";
+$insertCourts = "INSERT INTO courts (seats,name) VALUES (280,'1廳'),(200,'2廳'),(153,'3廳')";
 $conn->query($insertCourts);
 
-$randScreenings = "UPDATE screenings SET courts_id = CEILING(RAND()*2)";
+$randScreenings = "UPDATE screenings SET courts_id = CEILING(RAND()*3)";
 $conn->query($randScreenings);
 
 echo "<br>".'爬蟲結束時間:'.date("d-m-Y H:i:s");   //結束時間
