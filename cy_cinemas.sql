@@ -122,7 +122,7 @@ DROP TABLE IF EXISTS `courts`;
 CREATE TABLE `courts`
 (
   `id` INT AUTO_INCREMENT NOT NULL,
-  `seats` VARCHAR(50),
+  `seats_number` VARCHAR(50),
   `name` varchar(10),
   PRIMARY KEY (`id`)
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -205,17 +205,17 @@ CREATE TABLE `point_record`
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- 套票
-DROP TABLE IF EXISTS `ticket_set`;
-CREATE TABLE `ticket_set`
-(
-  `id` INT AUTO_INCREMENT NOT NULL,
-  `name` INT,
-  `food_drinks_num` INT,
-  `tickets_num` INT,
-  `desc` VARCHAR(50),
-  `price` TIMESTAMP,
-  PRIMARY KEY (`id`)
-) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+-- DROP TABLE IF EXISTS `ticket_set`;
+-- CREATE TABLE `ticket_set`
+-- (
+--   `id` INT AUTO_INCREMENT NOT NULL,
+--   `name` INT,
+--   `food_drinks_num` INT,
+--   `tickets_num` INT,
+--   `desc` VARCHAR(50),
+--   `price` TIMESTAMP,
+--   PRIMARY KEY (`id`)
+-- ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- 總價折扣
 DROP TABLE IF EXISTS `total_price_discount`;
@@ -226,6 +226,16 @@ CREATE TABLE `total_price_discount` (
   `start_time` DATETIME NOT NULL,
   `end_time` DATETIME NOT NULL,
   PRIMARY KEY (`id`)
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- 廳次座位
+DROP TABLE IF EXISTS `screening_seats`;
+CREATE TABLE `screening_seats` (
+  `id` INT AUTO_INCREMENT NOT NULL,
+  `screenings_id` INT,
+  `seatName` VARCHAR(5),
+  PRIMARY KEY (`id`),
+  INDEX (`seatName`)
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 INSERT INTO tickets (name, price) VALUES ('全票', 280),('優待票', 280),('敬老票', 140),('愛心票', 140);
