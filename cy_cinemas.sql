@@ -183,7 +183,7 @@ CREATE TABLE `wallet_record`
   `id` INT AUTO_INCREMENT NOT NULL,
   `members_id` INT,
   `update_wallet` INT,
-  `current_wallet` INT,
+  `current_wallet` INT, -- 交易後餘額
   `desc` VARCHAR(50),
   `update_time` TIMESTAMP,
   PRIMARY KEY (`id`),
@@ -197,7 +197,7 @@ CREATE TABLE `point_record`
   `id` INT AUTO_INCREMENT NOT NULL,
   `members_id` INT,
   `update_point` INT,
-  `current_point` INT,
+  `current_point` INT, -- 交易後點數
   `desc` VARCHAR(50),
   `update_time` TIMESTAMP,
   PRIMARY KEY (`id`),
