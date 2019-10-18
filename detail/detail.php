@@ -1,12 +1,14 @@
 <?php
-
 require_once '../header.php';
 require_once '../database.php';
 
-$url = explode('/', rtrim($_GET['url'], '/'));
+$url = explode("/",rtrim($_GET['url'],"/")); 
 
-if ($url[0]) {
+
+if($url[0]){
+    
     switch ($url[0]) {
+        
         case 'saveOrder':
         saveOrderDetail();
             break;
@@ -18,12 +20,15 @@ if ($url[0]) {
         case 'tapGetSellOut':
         tapGetSellOut();
             break;
- 
+
+        case 'getScreeningSeat':
+            getScreeningSeat($url[1]);
+            break;
         default:
             break;
     }
-} else {
-    echo 'What do you need?';
+}else{
+    echo("What do you need?");
 }
 
 // $conn -> close();
@@ -77,22 +82,21 @@ function getSellOut(){
      echo json_encode($sqlData);  
 } 
 // ----------------saveOrderDetail---------------
-function saveOrderDetail()
-{
+function saveOrderDetail(){ 
     global $conn;
-    $mysql = $_POST['SQL'];
+    $mysql = $_POST['SQL'];  
     switch ($mysql) {
-        case 'show':
-        // ------------------show tables-------------------
-        $sql = 'SHOW tables';
-        $stmt = $conn->prepare($sql);
+        case 'show': 
+        // ------------------show tables------------------- 
+        $sql = 'SHOW tables';   
+        $stmt=$conn->prepare($sql); 
         $stmt->execute();
         $sqlData = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $showTable = [];
-        foreach ($sqlData as $key => $value) {
-            array_push($showTable, $value['Tables_in_ahzheng_cy_cinemas']);
-        }
-        echo '*******************showTables**********************';
+        foreach ($sqlData as $key => $value) { 
+            array_push($showTable,$value["Tables_in_ahzheng_cy_cinemas"]);  
+        }  
+        echo "*******************showTables**********************";  
         echo json_encode($sqlData);
             break;
         case 'desc':
@@ -102,11 +106,11 @@ function saveOrderDetail()
             $stmt->execute();
             $sqlData = $stmt->fetchAll(PDO::FETCH_ASSOC);
             $desc = [];
-            foreach ($sqlData as $key => $value) {
-                array_push($desc, $value['Field']);
-            }
-            echo '*********************fields************************';
-            echo json_encode($desc);
+            foreach ($sqlData as $key => $value) { 
+                array_push($desc,$value["Field"]); 
+            }  
+            echo "*********************fields************************"; 
+            echo json_encode($desc);   
             break;
         case 'select':
             // ------------------SELECT-------------------
@@ -117,18 +121,18 @@ function saveOrderDetail()
             $stmt=$conn->prepare($sql);
             if($ID)
                 $stmt->bindParam(':id', $ID);
-            }
             $stmt->execute();
             $sqlData = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            echo json_encode($sqlData);
+            echo json_encode($sqlData); 
             break;
-        case 'save':
+        case 'save':  
         // ----------------------save-----------------------
             $frontData = isset($_POST['JSONData'])?$_POST['JSONData']:'no post';
             $list = json_decode($frontData);    
             $ticketsNum      = isset($_POST['ticketData'])?$_POST['ticketData']:'no post'; 
             $foodDrinksNum   = isset($_POST['foodData'])?$_POST['foodData']:'no post';
             $account         = $list->accout == ""?"Guest":$list->accout;    
+
             $sql = 'INSERT INTO `order_details` ( 
              `screenings_id`,
              `serial_number` ,
@@ -144,9 +148,9 @@ function saveOrderDetail()
              `phone` ,
              `email` ) 
             VALUES (:a,:b,:c,:d,:e,:f,:g,:m,:h,:i,:j,:k,:l)'; 
-            $a=$_POST['screeningID'];  //screeningID
-            $c=1;  //courts_id 
-            $tickets_total_num = 5;
+            $a=$_POST['screeningID'];   
+            $c=$_POST['courts_id'];  
+            $tickets_total_num =$_POST['ticketTotalNum'];
             $stmt = $conn->prepare($sql); 
             $stmt->bindParam(':a',$a);
             $stmt->bindParam(':b',$list->orderNumber); 
@@ -168,4 +172,20 @@ function saveOrderDetail()
             break;
     }
 }
-// ----------------saveOrderDetail---------------
+// ----------------saveOrderDetail--------------- 
+
+function getScreeningSeat($scrID){
+    global $conn;
+    if($scrID=''){
+        $sql = "SELECT * FROM screening_seats";
+        $stmt = $conn->query($sql);
+        if($stmt){
+            $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            var_dump($data);
+        }else{
+            $error = $conn->errorInfo();
+            echo "查詢失敗，錯誤訊息：".$error[2];
+        }
+    }
+}
+?>
