@@ -32,7 +32,7 @@ CREATE TABLE `members` (
     `password` VARCHAR(100) NOT NUll,
     `email` VARCHAR(100) NOT NUll,
     `phone` VARCHAR(10) NOT NUll,
-    `wallet` TINYINT DEFAULT 0,
+    `wallet` SMALLINT DEFAULT 0,
     `point`  TINYINT DEFAULT 0,
     PRIMARY KEY (`id`),
     UNIQUE KEY (`account`)
@@ -122,7 +122,7 @@ DROP TABLE IF EXISTS `courts`;
 CREATE TABLE `courts`
 (
   `id` INT AUTO_INCREMENT NOT NULL,
-  `seats` VARCHAR(50),
+  `seats_number` VARCHAR(50),
   `name` varchar(10),
   PRIMARY KEY (`id`)
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -205,17 +205,17 @@ CREATE TABLE `point_record`
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- 套票
-DROP TABLE IF EXISTS `ticket_set`;
-CREATE TABLE `ticket_set`
-(
-  `id` INT AUTO_INCREMENT NOT NULL,
-  `name` INT,
-  `food_drinks_num` INT,
-  `tickets_num` INT,
-  `desc` VARCHAR(50),
-  `price` TIMESTAMP,
-  PRIMARY KEY (`id`)
-) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+-- DROP TABLE IF EXISTS `ticket_set`;
+-- CREATE TABLE `ticket_set`
+-- (
+--   `id` INT AUTO_INCREMENT NOT NULL,
+--   `name` INT,
+--   `food_drinks_num` INT,
+--   `tickets_num` INT,
+--   `desc` VARCHAR(50),
+--   `price` TIMESTAMP,
+--   PRIMARY KEY (`id`)
+-- ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- 總價折扣
 DROP TABLE IF EXISTS `total_price_discount`;
@@ -228,5 +228,15 @@ CREATE TABLE `total_price_discount` (
   PRIMARY KEY (`id`)
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
-INSERT INTO tickets (name, price) VALUES ('全票', 190),('優待票', 170),('敬老票', 130),('學生票', 150);
+-- 廳次座位
+DROP TABLE IF EXISTS `screening_seats`;
+CREATE TABLE `screening_seats` (
+  `id` INT AUTO_INCREMENT NOT NULL,
+  `screenings_id` INT,
+  `seatName` VARCHAR(5),
+  PRIMARY KEY (`id`),
+  INDEX (`seatName`)
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+INSERT INTO tickets (name, price) VALUES ('全票', 280),('優待票', 280),('敬老票', 140),('愛心票', 140);
 INSERT INTO meals (name, size, price) VALUES ('爆米花', '小', 30),('爆米花', '中', 50),('爆米花', '大', 70),('可樂', '中', 30),('可樂', '大', 50)

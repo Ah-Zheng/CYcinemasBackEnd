@@ -10,18 +10,27 @@ $url = explode('/', rtrim($_GET['url'], '/'));
 switch ($method) {
     case 'POST':
         // echo $url[0];
-        if ($url[0] == 'members') {
-            saveNewMember();
-        } elseif ($url[0] == 'login') {
-            checkLogin();
-        } elseif ($url[0] == 'showUserData') {
-            getUserData();
-        } elseif ($url[0] == 'saveEditData') {
-            saveEditData();
-        } elseif ($url[0] == 'saveNewPwd') {
-            saveNewPwd();
-        } else {
-            echo 'ERROR';
+        switch ($url[0]) {
+            case 'members':
+                saveNewMember();
+                break;
+            case 'login':
+                checkLogin();
+                break;
+            case 'showUserData':
+                getUserData();
+                break;
+            case 'saveEditData':
+                saveEditData();
+                break;
+            case 'saveNewPwd':
+                saveNewPwd();
+                break;
+            case 'showDetail':
+                showDetail();
+                break;
+            default:
+                echo 'ERROR';
         }
         break;
     case 'GET':
@@ -30,6 +39,17 @@ switch ($method) {
         break;
     default:
         echo 'XXXX.';
+}
+
+function showDetail() {
+    global $conn;
+    $account = $_POST['account'];
+    $sql = "SELECT * FROM `order_details` WHERE `members_account` = :account";
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':account', $account);
+    $stmt->execute();
+    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    echo json_encode($data);
 }
 
 function saveNewPwd() {
