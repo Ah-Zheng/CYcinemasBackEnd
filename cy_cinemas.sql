@@ -32,7 +32,6 @@ CREATE TABLE `members` (
     `password` VARCHAR(100) NOT NUll,
     `email` VARCHAR(100) NOT NUll,
     `phone` VARCHAR(10) NOT NUll,
-    `wallet` SMALLINT DEFAULT 0,
     `point`  TINYINT DEFAULT 0,
     PRIMARY KEY (`id`),
     UNIQUE KEY (`account`)
@@ -170,17 +169,17 @@ CREATE TABLE `order_details`
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- 儲值紀錄
-DROP TABLE IF EXISTS `wallet_record`;
-CREATE TABLE `wallet_record`
-(
-  `id` INT AUTO_INCREMENT NOT NULL,
-  `members_id` INT,
-  `update_wallet` INT,
-  `current_wallet` INT, -- 交易後餘額
-  `desc` VARCHAR(50),
-  `update_time` TIMESTAMP,
-  PRIMARY KEY (`id`)
-) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+-- DROP TABLE IF EXISTS `wallet_record`;
+-- CREATE TABLE `wallet_record`
+-- (
+--   `id` INT AUTO_INCREMENT NOT NULL,
+--   `members_id` INT,
+--   `update_wallet` INT,
+--   `current_wallet` INT, -- 交易後餘額
+--   `desc` VARCHAR(50),
+--   `update_time` TIMESTAMP,
+--   PRIMARY KEY (`id`)
+-- ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- 點數紀錄
 DROP TABLE IF EXISTS `point_record`;
