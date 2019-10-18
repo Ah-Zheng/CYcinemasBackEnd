@@ -1,14 +1,12 @@
 <?php
+
 require_once '../header.php';
 require_once '../database.php';
 
-$url = explode("/",rtrim($_GET['url'],"/")); 
+$url = explode('/', rtrim($_GET['url'], '/'));
 
-
-if($url[0]){
-    
+if ($url[0]) {
     switch ($url[0]) {
-        
         case 'saveOrder':
         saveOrderDetail();
             break;
@@ -24,8 +22,8 @@ if($url[0]){
         default:
             break;
     }
-}else{
-    echo("What do you need?");
+} else {
+    echo 'What do you need?';
 }
 
 // $conn -> close();
@@ -79,21 +77,22 @@ function getSellOut(){
      echo json_encode($sqlData);  
 } 
 // ----------------saveOrderDetail---------------
-function saveOrderDetail(){ 
+function saveOrderDetail()
+{
     global $conn;
-    $mysql = $_POST['SQL'];  
+    $mysql = $_POST['SQL'];
     switch ($mysql) {
-        case 'show': 
-        // ------------------show tables------------------- 
-        $sql = 'SHOW tables';   
-        $stmt=$conn->prepare($sql); 
+        case 'show':
+        // ------------------show tables-------------------
+        $sql = 'SHOW tables';
+        $stmt = $conn->prepare($sql);
         $stmt->execute();
         $sqlData = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $showTable = [];
-        foreach ($sqlData as $key => $value) { 
-            array_push($showTable,$value["Tables_in_ahzheng_cy_cinemas"]);  
-        }  
-        echo "*******************showTables**********************";  
+        foreach ($sqlData as $key => $value) {
+            array_push($showTable, $value['Tables_in_ahzheng_cy_cinemas']);
+        }
+        echo '*******************showTables**********************';
         echo json_encode($sqlData);
             break;
         case 'desc':
@@ -103,11 +102,11 @@ function saveOrderDetail(){
             $stmt->execute();
             $sqlData = $stmt->fetchAll(PDO::FETCH_ASSOC);
             $desc = [];
-            foreach ($sqlData as $key => $value) { 
-                array_push($desc,$value["Field"]); 
-            }  
-            echo "*********************fields************************"; 
-            echo json_encode($desc);   
+            foreach ($sqlData as $key => $value) {
+                array_push($desc, $value['Field']);
+            }
+            echo '*********************fields************************';
+            echo json_encode($desc);
             break;
         case 'select':
             // ------------------SELECT-------------------
@@ -118,11 +117,12 @@ function saveOrderDetail(){
             $stmt=$conn->prepare($sql);
             if($ID)
                 $stmt->bindParam(':id', $ID);
+            }
             $stmt->execute();
             $sqlData = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            echo json_encode($sqlData); 
+            echo json_encode($sqlData);
             break;
-        case 'save':  
+        case 'save':
         // ----------------------save-----------------------
             $frontData = isset($_POST['JSONData'])?$_POST['JSONData']:'no post';
             $list = json_decode($frontData);    
@@ -168,5 +168,4 @@ function saveOrderDetail(){
             break;
     }
 }
-// ----------------saveOrderDetail--------------- 
-?>
+// ----------------saveOrderDetail---------------

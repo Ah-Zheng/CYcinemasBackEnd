@@ -19,10 +19,16 @@ switch ($method) {
         } elseif (isset($url[0]) && $url[0] == 'removeShowMovies') {
             setShowMovies($url[1], 0); // (movieId, 0)
             exit();
-        } 
+        } elseif (isset($url[0])) {
+            getMovies($url[0]);
+            exit();
+        }
         getMovies();
         break;
     case 'POST':
+        if (isset($url[0]) && $url[0] == 'update') {
+            updateMovies($url[1]);
+        }
         break;
     case 'DELETE':
         break;
@@ -31,12 +37,19 @@ switch ($method) {
         break;
 }
 
-// 取得所有電影資料
-function getMovies()
+// 取得電影資料
+function getMovies($movieId = '')
 {
     global $conn;
-    $sql = 'SELECT * FROM `movies`';
-    $stmt = $conn->prepare($sql);
+    if ($movieId == '') { // 判斷有無電影id，沒有就取得所有電影資料
+        $sql = 'SELECT * FROM `movies`';
+        $stmt = $conn->prepare($sql);
+    } else {
+        $movieId = intval($movieId);
+        $sql = 'SELECT * FROM `movies` WHERE `id` = :movieId';
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':movieId', $movieId);
+    }
     $stmt->execute();
     $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -54,15 +67,13 @@ function getTypeMovies($type, $show)
     $today = date('Y/m/d');
     if ($type == 'released') {
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $movieDate = substr($row['play_date'], -10);
-            if (strtotime($today) - strtotime($movieDate) >= 0) {
+            if (strtotime($today) - strtotime($row['play_date']) >= 0) {
                 $data[] = $row;
             }
         }
     } else {
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $movieDate = substr($row['play_date'], -10);
-            if (strtotime($today) - strtotime($movieDate) < 0) {
+            if (strtotime($today) - strtotime($row['play_date']) < 0) {
                 $data[] = $row;
             }
         }
@@ -88,6 +99,31 @@ function setShowMovies($movieId, $show)
         $data = returnData(201, $msg);
     } else {
         $data = returnData(500, '伺服器內部問題', STATUS_500);
+    }
+
+    echo json_encode($data);
+}
+
+// 更新電影資料
+function updateMovies($movieId)
+{
+    global $conn;
+    $movieId = intval($movieId);
+    $movie = isset($_POST['movieDatas']);
+    $sql = 'UPDATE `movies` SET `name` = :movieName, `actor` = :actor, `genre` = :genre, `rating` = :rating, `run_time` = :runTime, `play_date` = :playDate, `info` = :info WHERE `id` = :movieId';
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':movieName', $movie->name);
+    $stmt->bindParam(':actor', $movie->actor);
+    $stmt->bindParam(':genre', $movie->genre);
+    $stmt->bindParam(':rating', $movie->rating);
+    $stmt->bindParam(':runTime', $movie->run_time);
+    $stmt->bindParam(':playDate', $movie->play_date);
+    $stmt->bindParam(':info', $movie->info);
+    $stmt->bindParam(':movieId', $movieId);
+    if ($stmt->execute()) {
+        $data = returnData(201, '修改成功');
+    } else {
+        $data = returnData(500, '伺服器內部錯誤', STATUS_500);
     }
 
     echo json_encode($data);

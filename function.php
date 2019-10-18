@@ -13,9 +13,9 @@ function uploadImg($file, $name, $dirName)
         // 大圖
         $handle->file_new_name_body = $name;
         $handle->file_overwrite = true;
-        $handle->img_resize = true;
-        $handle->image_x = 600;
-        $handle->image_y = 400;
+        $handle->image_resize = true;
+        $handle->image_x = 400;
+        $handle->image_y = 530;
         $handle->image_convert = 'png';
         $handle->image_ratio_crop = true;
         $handle->png_compression = 3;
@@ -27,9 +27,9 @@ function uploadImg($file, $name, $dirName)
         // 縮圖
         $handle->file_new_name_body = $name;
         $handle->file_overwrite = true;
-        $handle->img_resize = true;
+        $handle->image_resize = true;
         $handle->image_x = 300;
-        $handle->image_y = 200;
+        $handle->image_y = 400;
         $handle->image_convert = 'png';
         $handle->image_ratio_crop = true;
         $handle->png_compression = 3;

@@ -152,7 +152,7 @@ function updateNews($newsId)
     $stmt->bindParam(':endTime', $endTime);
     $stmt->bindParam(':id', $newsId);
     if ($stmt->execute()) {
-        $data = returnData(200, '修改成功');
+        $data = returnData(201, '修改成功');
     } else {
         $data = returnData(500, '修改失敗', STATUS_500);
     }
