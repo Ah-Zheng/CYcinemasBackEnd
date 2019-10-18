@@ -213,6 +213,7 @@ CREATE TABLE `screening_seats` (
   `id` INT AUTO_INCREMENT NOT NULL,
   `screenings_id` INT,
   `seatName` VARCHAR(5),
+  `available` TINYINT(1),
   PRIMARY KEY (`id`),
   INDEX (`seatName`)
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
