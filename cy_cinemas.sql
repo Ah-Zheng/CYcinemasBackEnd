@@ -217,5 +217,6 @@ CREATE TABLE `screening_seats` (
   INDEX (`seatName`)
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
+INSERT INTO courts (seats_number,name) VALUES (280,'1廳'),(200,'2廳'),(153,'3廳');
 INSERT INTO tickets (name, price) VALUES ('全票', 190),('優待票', 170),('學生票', 150),('敬老票', 130);
 INSERT INTO meals (name, size, price, category) VALUES ('爆米花', '小', 30, '食物'),('爆米花', '中', 50, '食物'),('爆米花', '大', 70,'食物'),('可樂', '中', 30, '飲料'),('可樂', '大', 50,'飲料')
