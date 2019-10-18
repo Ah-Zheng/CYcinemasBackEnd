@@ -17,6 +17,10 @@ switch ($method) {
         }
         break;
     case 'GET':
+        if (isset($url[0]) && $url[0] == 'category') {
+            getCategory();
+            exit();
+        }
         getMealsData($url[0]);
         break;
     case 'DELETE':
@@ -60,4 +64,16 @@ function updateMeals()
 // 刪除餐點
 function deleteMeals()
 {
+}
+
+// 取得分類
+function getCategory()
+{
+    global $conn;
+    $sql = 'SELECT DISTINCT `category` FROM `meals`';
+    $stmt = $conn->prepare($sql);
+    $stmt->execute();
+    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    echo json_encode($data);
 }

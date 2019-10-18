@@ -42,7 +42,7 @@ function getMovies($movieId = '')
 {
     global $conn;
     if ($movieId == '') { // 判斷有無電影id，沒有就取得所有電影資料
-        $sql = 'SELECT * FROM `movies`';
+        $sql = 'SELECT DISTINCT m.`id`, m.`name`, m.`enname`, m.`rating`, m.`run_time`, m.`info`, m.`actor`, m.`genre`, m.`play_date`, m.`poster`, m.`trailer`, m.`show_status` FROM `movies` m JOIN `movie_time` mt ON m.`encoded_id` = mt.`movies_encoded_id` WHERE mt.`theaters_name` = "國賓影城@台北長春廣場"';
         $stmt = $conn->prepare($sql);
     } else {
         $movieId = intval($movieId);
@@ -59,7 +59,11 @@ function getMovies($movieId = '')
 function getTypeMovies($type, $show)
 {
     global $conn;
-    $sql = 'SELECT * FROM `movies` WHERE `show_status` = :show';
+    if ($type == 'released') {
+        $sql = 'SELECT DISTINCT m.`id`, m.`name`, m.`enname`, m.`rating`, m.`run_time`, m.`info`, m.`actor`, m.`genre`, m.`play_date`, m.`poster`, m.`trailer`, m.`show_status` FROM `movies` m JOIN `movie_time` mt ON m.`encoded_id` = mt.`movies_encoded_id` WHERE mt.`theaters_name` = "國賓影城@台北長春廣場" AND `show_status` = :show';
+    } else {
+        $sql = 'SELECT * FROM `movies` WHERE `show_status` = :show';
+    }
     $stmt = $conn->prepare($sql);
     $stmt->bindParam(':show', $show);
     $stmt->execute();
@@ -67,13 +71,15 @@ function getTypeMovies($type, $show)
     $today = date('Y/m/d');
     if ($type == 'released') {
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            if (strtotime($today) - strtotime($row['play_date']) >= 0) {
+            if ($row['rating'] != '') {
+                // if (strtotime($today) - strtotime($row['play_date']) >= 0) {
                 $data[] = $row;
             }
         }
     } else {
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            if (strtotime($today) - strtotime($row['play_date']) < 0) {
+            if ($row['rating'] == '') {
+                // if (strtotime($today) - strtotime($row['play_date']) < 0) {
                 $data[] = $row;
             }
         }
