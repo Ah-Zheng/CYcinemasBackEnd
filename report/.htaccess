@@ -1,0 +1,2 @@
+RewriteEngine on
+RewriteRule ^(.*)$ report.php?url=$1 [QSA,L]

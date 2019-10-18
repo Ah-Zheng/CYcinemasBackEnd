@@ -228,5 +228,5 @@ CREATE TABLE `total_price_discount` (
   PRIMARY KEY (`id`)
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
-INSERT INTO tickets (name, price) VALUES ('全票', 280),('優待票', 280),('敬老票', 140),('愛心票', 140);
+INSERT INTO tickets (name, price) VALUES ('全票', 190),('優待票', 170),('敬老票', 130),('學生票', 150);
 INSERT INTO meals (name, size, price) VALUES ('爆米花', '小', 30),('爆米花', '中', 50),('爆米花', '大', 70),('可樂', '中', 30),('可樂', '大', 50)
