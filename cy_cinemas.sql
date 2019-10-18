@@ -45,6 +45,7 @@ CREATE TABLE `meals` (
     `name` VARCHAR(20) NOT NULL,
     `size` VARCHAR(5) NOT NULL,
     `price` INT NOT NULL,
+    `category` VARCHAR(10) NOT NULL,
     PRIMARY KEY (`id`)
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -92,8 +93,7 @@ CREATE TABLE `movie_time`
   `seat_tag` VARCHAR(20),
   `time` VARCHAR(10),
   `seat_info` VARCHAR(10),
-  PRIMARY KEY (`id`),
-  FOREIGN KEY(`movies_encoded_id`) REFERENCES `movies`(`encoded_id`)
+  PRIMARY KEY (`id`)
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- 電影日期 a
@@ -104,8 +104,7 @@ CREATE TABLE `movie_day`
   `movies_encoded_id` VARCHAR(50),
   `weekday` VARCHAR(20),
   `date` DATE,
-  PRIMARY KEY (`id`),
-  FOREIGN KEY(`movies_encoded_id`) REFERENCES `movies`(`encoded_id`)
+  PRIMARY KEY (`id`)
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- 熱門電影
@@ -113,8 +112,7 @@ DROP TABLE IF EXISTS `popular_movies`;
 CREATE TABLE `popular_movies` (
   `id` INT AUTO_INCREMENT NOT NULL,
   `movie_id` INT NOT NULL,
-  PRIMARY KEY (`id`),
-  FOREIGN KEY (`movie_id`) REFERENCES `movies`(`id`)
+  PRIMARY KEY (`id`)
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- 廳
@@ -136,9 +134,7 @@ CREATE TABLE `screenings`
   `movie_time_time` VARCHAR(20),
   `movie_day_date` DATE,
   `courts_id` INT,
-  PRIMARY KEY (`id`),
-  FOREIGN KEY(`movies_encoded_id`) REFERENCES `movies`(`encoded_id`),
-  FOREIGN KEY(`courts_id`) REFERENCES `courts`(`id`)
+  PRIMARY KEY (`id`)
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- 票種
@@ -170,10 +166,7 @@ CREATE TABLE `order_details`
   `phone` VARCHAR(10) NOT NUll,
   `email` VARCHAR(100) NOT NUll,
   `datetime`  TIMESTAMP,
-  PRIMARY KEY (`id`),
-  FOREIGN KEY(`screenings_id`) REFERENCES `screenings`(`id`),
-  FOREIGN KEY(`courts_id`) REFERENCES `courts`(`id`),
-  FOREIGN KEY(`members_account`) REFERENCES `members`(`account`)
+  PRIMARY KEY (`id`)
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- 儲值紀錄
@@ -186,8 +179,7 @@ CREATE TABLE `wallet_record`
   `current_wallet` INT,
   `desc` VARCHAR(50),
   `update_time` TIMESTAMP,
-  PRIMARY KEY (`id`),
-  FOREIGN KEY(`members_id`) REFERENCES `members`(`id`)
+  PRIMARY KEY (`id`)
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- 點數紀錄
@@ -200,22 +192,9 @@ CREATE TABLE `point_record`
   `current_point` INT,
   `desc` VARCHAR(50),
   `update_time` TIMESTAMP,
-  PRIMARY KEY (`id`),
-  FOREIGN KEY(`members_id`) REFERENCES `members`(`id`)
+  PRIMARY KEY (`id`)
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
--- 套票
--- DROP TABLE IF EXISTS `ticket_set`;
--- CREATE TABLE `ticket_set`
--- (
---   `id` INT AUTO_INCREMENT NOT NULL,
---   `name` INT,
---   `food_drinks_num` INT,
---   `tickets_num` INT,
---   `desc` VARCHAR(50),
---   `price` TIMESTAMP,
---   PRIMARY KEY (`id`)
--- ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- 總價折扣
 DROP TABLE IF EXISTS `total_price_discount`;
@@ -238,5 +217,5 @@ CREATE TABLE `screening_seats` (
   INDEX (`seatName`)
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
-INSERT INTO tickets (name, price) VALUES ('全票', 280),('優待票', 280),('敬老票', 140),('愛心票', 140);
-INSERT INTO meals (name, size, price) VALUES ('爆米花', '小', 30),('爆米花', '中', 50),('爆米花', '大', 70),('可樂', '中', 30),('可樂', '大', 50)
+INSERT INTO tickets (name, price) VALUES ('全票', 190),('優待票', 170),('學生票', 150),('敬老票', 130);
+INSERT INTO meals (name, size, price, category) VALUES ('爆米花', '小', 30, '食物'),('爆米花', '中', 50, '食物'),('爆米花', '大', 70,'食物'),('可樂', '中', 30, '飲料'),('可樂', '大', 50,'飲料')
