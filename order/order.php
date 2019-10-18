@@ -4,12 +4,6 @@ require_once '../database.php';
 
 $url = explode("/",rtrim($_GET['url'],"/"));
 
-// ---------------saveOrder--------------------
-$method = $_SERVER['REQUEST_METHOD'];
-if($method == 'POST'){  
-    saveOrderDetail();  
-}
-// ---------------saveOrder---------------------
 
 if($url[0]){
     
@@ -35,8 +29,8 @@ if($url[0]){
             getMeals();
             
             break;
-        case 'getScreeingID':
-            getScreeingID($url[1],$url[2],$url[3]);
+        case 'getScreeningID':
+        getScreeningID($url[1],$url[2],$url[3]);
         
             break;
         default:
@@ -52,7 +46,7 @@ function getMovies(){
     global $conn;
     // $result = $conn -> query("select movies.id,encoded_id,name from movies join movie_time on encoded_id = movies_encoded_id where rating is not null and theaters_name = '國賓影城@台北長春廣場' group by movies.id");
    
-    $sql = "SELECT `movies`.`id`, `encoded_id`, `name` FROM `movies` join `movie_time` on `encoded_id` = `movies_encoded_id` where `rating` is not null and `theaters_name` = '國賓影城@台北長春廣場' group by `movies`.`id`";
+    $sql = "SELECT `movies`.`id`, `encoded_id`, `name` FROM `movies` join `movie_time` on `encoded_id` = `movies_encoded_id` where `rating` <> '' and  `show_status` = 1 and `theaters_name` = '國賓影城@台北長春廣場' group by `movies`.`id`";
     // $stmt = $conn->prepare($sql);
     // $stmt->bindParam(':id', $newsId);
     // $stmt->execute();
@@ -123,110 +117,28 @@ function getMeals(){
 
 }
 
-function getScreeingID($movieID,$movieTime,$movieDate){
+function getScreeningID($movieID='',$movieTime='',$movieDate=''){
     global $conn;
-
-    $sql ="SELECT `id` FROM `screenings` WHERE `movies_encoded_id` = :movies_encoded_id AND `movie_time_time` = :movie_time_time AND `movie_day_date` = :movie_day_date";
-    $stmt = $conn->prepare($sql);
-
-    $movieID = trim($movieID);
-    $movieTime = trim($movieTime);
-    $movieDate = trim($movieDate);
-    $stmt->bindParam(':movies_encoded_id', $movieID);
-    $stmt->bindParam(':movie_time_time', $movieTime);
-    $stmt->bindParam(':movie_day_date', $movieDate);
-    $stmt->execute();    
-    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    if($movieID&&$movieTime&&$movieDate){
+        $sql ="SELECT `id`,`courts_id` FROM `screenings` WHERE `movies_encoded_id` = :movies_encoded_id AND `movie_time_time` = :movie_time_time AND `movie_day_date` = :movie_day_date";
+        $stmt = $conn->prepare($sql);
     
-    echo json_encode($data);
-}
-
-// ----------------saveOrderDetail---------------
-function saveOrderDetail(){
-    global $conn;
-    $mysql = $_POST['SQL']; 
-    switch ($mysql) {
-        case 'show':
-            // ------------------show tables------------------- 
-            $sql = 'show tables';   
-            $stmt=$conn->prepare($sql); 
-            $stmt->execute();
-            $sqlData = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            $showTable = [];
-            foreach ($sqlData as $key => $value) { 
-                array_push($showTable,$value["Tables_in_cy_cinemas"]); 
-            }  
-            echo "*******************showTables**********************";  
-            echo json_encode($showTable);
-            break;
-        case 'desc':
-            // ------------------Check Field------------------- 
-            $sql = 'DESC `order_details`';   
-            $stmt=$conn->prepare($sql); 
-            $stmt->execute();
-            $sqlData = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            $desc = [];
-            foreach ($sqlData as $key => $value) { 
-                array_push($desc,$value["Field"]); 
-            }  
-            echo "*********************fields************************"; 
-            echo json_encode($desc);   
-            break;
-        case 'select':
-            // ------------------SELECT-------------------
-            $ID = isset($_POST['ID'])?$_POST['ID']:0; 
-            $sql = 'SELECT * FROM `order_details`';   
-            if($ID)
-                $sql = 'SELECT * FROM `order_details` WHERE `id`=:id'; 
-            $stmt=$conn->prepare($sql);
-            if($ID)
-                $stmt->bindParam(':id', $ID);
-            $stmt->execute();
-            $sqlData = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            echo json_encode($sqlData); 
-            break;
-        case 'save':  
-        // ----------------------save-----------------------
-            $frontData = isset($_POST['JSONData'])?$_POST['JSONData']:'no post';
-            $list = json_decode($frontData);    
-            $ticketsNum      = isset($_POST['foodData'])?$_POST['foodData']:'no post'; 
-            $foodDrinksNum   = isset($_POST['ticketData'])?$_POST['ticketData']:'no post';
-            $account         = $list->accout == ""?"Guest":$list->accout;    
-            $sql = 'INSERT INTO `order_details` ( 
-             `screenings_id`,
-             `serial_number` ,
-             `members_account` ,
-             `courts_id`,
-             `seat` ,
-             `total_price` ,
-             `discounted_price` ,
-             `tickets_num` ,
-             `meals_num` ,
-             `name` ,
-             `phone` ,
-             `email` ) 
-            VALUES (:a,:b,:c,:d,:e,:f,:g,:h,:i,:j,:k,:l)'; 
-            $a=1;  //screenings_id
-            $c=1;  //courts_id 
-            $stmt = $conn->prepare($sql); 
-            $stmt->bindParam(':a',$a);
-            $stmt->bindParam(':b',$list->orderNumber); 
-            $stmt->bindParam(':c',$account); 
-            $stmt->bindParam(':d',$c); 
-            $stmt->bindParam(':e',$list->seat); 
-            $stmt->bindParam(':f',$list->total); 
-            $stmt->bindParam(':g',$list->real); 
-            $stmt->bindParam(':h',$ticketsNum); 
-            $stmt->bindParam(':i',$foodDrinksNum); 
-            $stmt->bindParam(':j',$list->memberName); 
-            $stmt->bindParam(':k',$list->phone); 
-            $stmt->bindParam(':l',$list->email);
-            $stmt->execute(); 
-            echo "Saved"; 
-            break; 
-        default: 
-            break;
+        $movieID = trim($movieID);
+        $movieTime = trim($movieTime);
+        $movieDate = trim($movieDate);
+        $stmt->bindParam(':movies_encoded_id', $movieID);
+        $stmt->bindParam(':movie_time_time', $movieTime);
+        $stmt->bindParam(':movie_day_date', $movieDate);
+        $stmt->execute();    
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        echo json_encode($data);
+    }else{
+        $sql ="SELECT `id` FROM `screenings`";
+        $stmt = $conn->query($sql);
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        echo json_encode($data);
     }
 }
-// ----------------saveOrderDetail--------------- 
+
 ?>
