@@ -28,6 +28,8 @@ if($url[0]){
         case 'getScreeningSeat':
         getScreeningSeat($url[1]);
             break;
+        case 'getPointRecord':
+        getPointRecord();
         default:
             break;
     }
@@ -135,7 +137,7 @@ function saveOrderDetail(){
             $list = json_decode($frontData);    
             $ticketsNum      = isset($_POST['ticketData'])?$_POST['ticketData']:'no post'; 
             $foodDrinksNum   = isset($_POST['foodData'])?$_POST['foodData']:'no post';
-            $account         = $list->accout == ""?"Guest":$list->accout;    
+            $account         = $list->account == ""?"Guest":$list->account;    
 
             $sql = 'INSERT INTO `order_details` ( 
              `screenings_id`,
@@ -184,7 +186,7 @@ function updateMemberPoint(){
     // 更新會員點數
     $frontData = isset($_POST['JSONData'])?$_POST['JSONData']:'no post';
     $list = json_decode($frontData);    
-    $account         = $list->accout;    
+    $account         = $list->account;    
     $point = floor($list->real/100);
 
     $sql = "UPDATE `members` SET `point` = `point` + :pt WHERE `account` = :account";
@@ -194,31 +196,80 @@ function updateMemberPoint(){
     $exec = $stmt->execute();
 
     if($exec){
-        echo "update OK";
+        echo "update memberPoint OK, ";
     }else{
         echo "update failed: " . $conn->errorInfo()[2];
     }
 
     // 新增會員更新點數紀錄
-    $stmt = $conn->query("SELECT `id`,`point` FROM `members` WHERE account = $list->account");
+    $stmt = $conn->query("SELECT `id`,`point` FROM `members` WHERE account = '$list->account'");
     $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     $json = json_encode($result);
     $json = json_decode($json);
 
+
+    $id = $json[0]->id;
+    $cuPoint = $json[0]->point;
     $sql = "INSERT INTO `point_record` (`members_id`, `update_point`, `current_point`, `desc`) VALUES
      (:members_id,:update_point,:current_point, '購票獲得點數')";
     $stmt = $conn->prepare($sql);
-    $stmt->bindParam(':members_id',$json->id);
+    $stmt->bindParam(':members_id',$id);
     $stmt->bindParam(':update_point',$point);
-    $stmt->bindParam(':current_point',$json->point + $point);
+    $stmt->bindParam(':current_point',$cuPoint);
 
     $exec = $stmt->execute();
+
     if($exec){
-        echo "insert OK";
+        echo "insert point_record OK";
     }else{
         echo "insert failed: " . $conn->errorInfo()[2];
     }
+
+}
+
+function getPointRecord(){
+    global $conn;
+    // $frontData = isset($_POST['JSONData'])?$_POST['JSONData']:'no post';
+    // $list = json_decode($frontData);    
+    // $account         = $list->account;    
+    // $point = floor($list->real/100);
+
+    // $stmt = $conn->query("SELECT `id`,`point` FROM `members` WHERE account = '$list->account'");
+    // $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    // $json = json_encode($result);
+    // $json = json_decode($json);
+    
+
+    // $id = $json[0]->id;
+    // $cuPoint = $json[0]->point +$point;
+    // $sql = "INSERT INTO `point_record` (`members_id`, `update_point`, `current_point`, `desc`) VALUES
+    //  (:members_id,:update_point,:current_point, '購票獲得點數')";
+    // $stmt = $conn->prepare($sql);
+    // $stmt->bindParam(':members_id',$id);
+    // $stmt->bindParam(':update_point',$point);
+    // $stmt->bindParam(':current_point',$cuPoint);
+
+    // $exec = $stmt->execute();
+    // if($exec){
+    //     echo "insert point_record OK";
+    // }else{
+    //     echo "insert failed: " . $conn->errorInfo()[2];
+    // }
+    
+
+// 查詢所有紀錄
+    $sql = "SELECT * FROM point_record";
+        $stmt = $conn->query($sql);
+        if($stmt){
+            $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            var_dump($data);
+        }else{
+            $error = $conn->errorInfo();
+            echo "查詢失敗，錯誤訊息：".$error[2];
+        }
+
+
 
 }
 
