@@ -29,7 +29,7 @@ function getMemberPoint($acc=''){
         else
         {
             $error = $conn->errorInfo();
-            echo "插入失敗，錯誤訊息：".$error[2];
+            echo "查詢失敗，錯誤訊息：".$error[2];
         }
     }else{
         $sql = "SELECT `point` FROM `members` WHERE `account` = :acc";

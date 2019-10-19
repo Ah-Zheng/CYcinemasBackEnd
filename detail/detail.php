@@ -13,6 +13,10 @@ if($url[0]){
         saveOrderDetail();
             break;
 
+        case 'updateMemberPoint':
+        updateMemberPoint();
+            break;
+
         case 'getSellOut':
         getSellOut();
             break;
@@ -22,7 +26,7 @@ if($url[0]){
             break;
 
         case 'getScreeningSeat':
-            getScreeningSeat($url[1]);
+        getScreeningSeat($url[1]);
             break;
         default:
             break;
@@ -166,7 +170,7 @@ function saveOrderDetail(){
             $stmt->bindParam(':k',$list->phone); 
             $stmt->bindParam(':l',$list->email);
             $stmt->execute(); 
-            echo "Saved"; 
+            echo "Saved order details";
             break; 
         default: 
             break;
@@ -174,9 +178,56 @@ function saveOrderDetail(){
 }
 // ----------------saveOrderDetail--------------- 
 
-function getScreeningSeat($scrID){
+function updateMemberPoint(){
     global $conn;
-    if($scrID=''){
+
+    // 更新會員點數
+    $frontData = isset($_POST['JSONData'])?$_POST['JSONData']:'no post';
+    $list = json_decode($frontData);    
+    $account         = $list->accout;    
+    $point = floor($list->real/100);
+
+    $sql = "UPDATE `members` SET `point` = `point` + :pt WHERE `account` = :account";
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':pt',$point);
+    $stmt->bindParam(':account',$account);
+    $exec = $stmt->execute();
+
+    if($exec){
+        echo "update OK";
+    }else{
+        echo "update failed: " . $conn->errorInfo()[2];
+    }
+
+    // 新增會員更新點數紀錄
+    $stmt = $conn->query("SELECT `id`,`point` FROM `members` WHERE account = $list->account");
+    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $json = json_encode($result);
+    $json = json_decode($json);
+
+    $sql = "INSERT INTO `point_record` (`members_id`, `update_point`, `current_point`, `desc`) VALUES
+     (:members_id,:update_point,:current_point, '購票獲得點數')";
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':members_id',$json->id);
+    $stmt->bindParam(':update_point',$point);
+    $stmt->bindParam(':current_point',$json->point + $point);
+
+    $exec = $stmt->execute();
+    if($exec){
+        echo "insert OK";
+    }else{
+        echo "insert failed: " . $conn->errorInfo()[2];
+    }
+
+}
+
+
+
+
+function getScreeningSeat($scrID=''){
+    global $conn;
+    if($scrID==''){
         $sql = "SELECT * FROM screening_seats";
         $stmt = $conn->query($sql);
         if($stmt){
@@ -186,6 +237,8 @@ function getScreeningSeat($scrID){
             $error = $conn->errorInfo();
             echo "查詢失敗，錯誤訊息：".$error[2];
         }
+    }else{
+        $sql = "SELECT * FROM screening_seats";
     }
 }
 ?>
