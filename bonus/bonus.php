@@ -9,6 +9,9 @@ if($url[0]){
         case 'getMemberPoint':
             getMemberPoint($url[1]);
             break;
+        case 'updateMemberPoint':
+            updateMemberPoint($url[1]);
+            break;
         default:
             break;
     }
@@ -50,4 +53,66 @@ function getMemberPoint($acc=''){
 
 }
 
+function updateMemberPoint($acc){
+    global $conn;
+    $account = isset($_POST['account'])?$_POST['account']:'no post';
+    $current_point = isset($_POST['current_point'])?$_POST['current_point']:'no post';
+    $update_point = isset($_POST['update_point'])?$_POST['update_point']:'no post';
+
+    // 更新會員點數
+
+        $conn->beginTransaction();
+
+        $sql = "SELECT * FROM `members` WHERE `account` = '$account' and `point` + $update_point >=0";
+        $check = $conn->query($sql);
+        $check = $check->fetch();
+        if($check){
+            $sql = "UPDATE `members` SET `point` = `point` + :update_point WHERE `account` = :account";
+            $stmt = $conn->prepare($sql);
+            $stmt->bindParam(':update_point',$update_point);
+            $stmt->bindParam(':account',$account);
+            $exec = $stmt->execute();
+        
+            if($exec){
+                echo "update memberPoint OK, ";
+            }else{
+                echo "update failed: " . $conn->errorInfo()[2];
+                $conn->rollBack();
+                exit();
+            }
+        }else{
+            echo "Point is not enough.";
+            $conn->rollBack();
+            exit();
+        }
+    
+        // 新增會員更新點數紀錄
+        $stmt = $conn->query("SELECT `id`,`point` FROM `members` WHERE account = '$account'");
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+        $json = json_encode($result);
+        $json = json_decode($json);
+    
+    
+        $id = $json[0]->id;
+
+        $sql = "INSERT INTO `point_record` (`members_id`, `update_point`, `current_point`, `desc`) VALUES
+         (:members_id,:update_point,:current_point, '玩小瑪莉的點數異動')";
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':members_id',$id);
+        $stmt->bindParam(':update_point',$update_point);
+        $stmt->bindParam(':current_point',$current_point);      //更新後點數
+    
+        $exec = $stmt->execute();
+    
+        if($exec){
+            echo "insert point_record OK";
+            $conn->commit();
+        }else{
+            echo "insert failed: " . $conn->errorInfo()[2];
+            $conn->rollBack();
+            exit();
+        }
+    
+}
 ?>
