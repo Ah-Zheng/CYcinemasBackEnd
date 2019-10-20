@@ -6,6 +6,9 @@ $url = explode("/",rtrim($_GET['url'],"/"));
 
 if($url[0]){
     switch($url[0]){
+        case 'getProbability':
+            getProbability();
+            break;
         case 'getMemberPoint':
             getMemberPoint($url[1]);
             break;
@@ -114,5 +117,14 @@ function updateMemberPoint($acc){
             exit();
         }
     
+}
+
+function getProbability(){
+    $probabilty = new stdClass();
+    $probabilty->winOdds = 0.8;     //骰到非XX的機率
+    
+    //各倍率中的機率，應和為1。依序是爆米花、飲料、套餐、5倍BAR、可愛爆米花、7倍BAR和10倍BAR
+    $probabilty->bettingOddsArray = [0.4, 0.3, 0.2, 0.5, 0.03, 0.02, 0.01];    
+    echo json_encode([$probabilty]);
 }
 ?>
