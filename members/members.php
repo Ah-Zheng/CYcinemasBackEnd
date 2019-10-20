@@ -29,6 +29,9 @@ switch ($method) {
             case 'showDetail':
                 showDetail();
                 break;
+            case 'showPoint':
+                showPoint();
+                break;
             default:
                 echo 'ERROR';
         }
@@ -39,6 +42,23 @@ switch ($method) {
         break;
     default:
         echo 'XXXX.';
+}
+
+function showPoint() {
+    global $conn;
+    $account = $_POST['account'];
+    $sql = "SELECT `id` FROM `members` WHERE `account` = :account";
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':account', $account);
+    $stmt->execute();
+    $id = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $sql = "SELECT * FROM `point_record` WHERE `id` = :id";
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':id', $id);
+    $stmt->execute();
+    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    echo json_encode($data);
 }
 
 function showDetail() {
@@ -67,7 +87,6 @@ function saveNewPwd() {
     if (password_verify($oldPwd, $pwdInDb['password'])) {
         $passwordHash = password_hash($newPwd, PASSWORD_BCRYPT);
         $sql = "UPDATE `members` SET `password` = :password WHERE `account` = :nowAcc";
-        // $sql = "INSERT INTO `members` (`password`) VALUES (:password) WHERE `account` = :nowAcc";
         $stmt = $conn->prepare($sql);
         $stmt->bindParam(':password', $passwordHash);
         $stmt->bindParam(':nowAcc', $nowAcc);
@@ -119,12 +138,6 @@ function checkLogin() {
     global $conn;
     $account = $_POST['account'];
     $password = $_POST['password'];
-    // $sql = "SELECT count(*) FROM `members` WHERE `account` = :account";
-    // $stmt = $conn->prepare($sql);
-    // $stmt->bindParam(':account', $account);
-    // $stmt->execute();
-    // $rowCount = $stmt->fetchColumn();
-    // echo $rowCount; // 回傳查詢結果(查到的列數)
     // 檢查帳號 帳號正確後 再檢查密碼
     $sql = "SELECT count(*) FROM `members` WHERE `account` = :account";
     $stmt = $conn->prepare($sql);
@@ -173,7 +186,6 @@ function checkAccount() {
 }
 
 function saveNewMember() {
-    // WIP: 接收POST資料後 再做REGEX驗證 通過才存入資料庫
     global $conn;
     $name = $_POST['name'];
     $account = $_POST['account'];
