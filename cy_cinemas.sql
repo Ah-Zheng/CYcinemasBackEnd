@@ -32,7 +32,7 @@ CREATE TABLE `members` (
     `password` VARCHAR(100) NOT NUll,
     `email` VARCHAR(100) NOT NUll,
     `phone` VARCHAR(10) NOT NUll,
-    `point`  TINYINT DEFAULT 0,
+    `point`  SMALLINT DEFAULT 0,
     PRIMARY KEY (`id`),
     UNIQUE KEY (`account`)
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
