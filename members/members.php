@@ -53,7 +53,12 @@ function showPoint() {
     $stmt->execute();
     $id = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    $sql = "SELECT * FROM `point_record` WHERE `id` = :id";
+    $targetId = json_encode($id);
+    $targetId = json_decode($targetId);
+
+    $id = $targetId[0]->id;
+
+    $sql = "SELECT * FROM `point_record` WHERE `members_id` = :id";
     $stmt = $conn->prepare($sql);
     $stmt->bindParam(':id', $id);
     $stmt->execute();
