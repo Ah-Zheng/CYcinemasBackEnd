@@ -173,7 +173,7 @@ function checkAccount() {
 }
 
 function saveNewMember() {
-    // echo "CREATE NEW MEMBER";
+    // WIP: 接收POST資料後 再做REGEX驗證 通過才存入資料庫
     global $conn;
     $name = $_POST['name'];
     $account = $_POST['account'];
@@ -182,20 +182,35 @@ function saveNewMember() {
     $email = $_POST['email'];
     $phone = $_POST['phone'];
 
-    $sql = 'INSERT INTO `members` (`name`, `account`, `password`, `email`, `phone`) VALUES (:name, :account, :password, :email, :phone)';
+    // 各欄位驗證規則
+    $nameIsValid = preg_match("/^[^.,\/#!$%\^&\*;:{}=\-_`~()@<>\s]{1,}$/", $name);
+    $accIsValid = preg_match("/^[A-Za-z0-9]{5,}$/", $account);
+    $pwdIsValid = preg_match("/^[A-Za-z0-9]{5,}$/", $password);
+    $emailPattern = preg_match("/^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z]+$/", $email);
+    $phonePattern = preg_match("/^09\d{2}-?\d{3}-?\d{3}$/", $phone);
+
+    // 帳號存在性驗證
+    $sql = "SELECT count(*) FROM `members` WHERE `account` = :account";
     $stmt = $conn->prepare($sql);
-    $stmt->bindParam(':name', $name);
     $stmt->bindParam(':account', $account);
-    $stmt->bindParam(':password', $passwordHash);
-    $stmt->bindParam(':email', $email);
-    $stmt->bindParam(':phone', $phone);
+    $stmt->execute();
+    $rowCount = $stmt->fetchColumn();
 
-    if ($stmt->execute()) {
-        echo "會員註冊成功";
+    if ($nameIsValid && $accIsValid && $pwdIsValid && $emailPattern && $phonePattern && $rowCount == 0) {
+        $sql = 'INSERT INTO `members` (`name`, `account`, `password`, `email`, `phone`) VALUES (:name, :account, :password, :email, :phone)';
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':name', $name);
+        $stmt->bindParam(':account', $account);
+        $stmt->bindParam(':password', $passwordHash);
+        $stmt->bindParam(':email', $email);
+        $stmt->bindParam(':phone', $phone);
+
+        if ($stmt->execute()) {
+            echo "會員註冊成功";
+        } else {
+            echo "會員註冊失敗";
+        }
     } else {
-        echo "會員註冊失敗";
+        echo "會員註冊資訊有誤，請再確認";
     }
-
-    // $conn->close();
-    // echo json_encode($data);
 }

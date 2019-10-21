@@ -19,6 +19,11 @@ $url = explode('/', rtrim($_GET['url'], '/'));
 switch ($method) {
     case 'GET':
         if (isset($url[0]) && $url[0] == 'ticketType') {
+            if (isset($url[1]) && $url[1] == 'ticketData') {
+                getTicketData();
+                exit();
+            }
+            getTicketType();
         }
         break;
     case 'POST':
@@ -29,3 +34,31 @@ switch ($method) {
         echo json_encode(returnData(404, '404 NOT FOUND', STATUS_404));
         break;
 }
+
+/* 票種 */
+
+// 取得票種
+function getTicketType()
+{
+    global $conn;
+    $sql = 'SELECT `name` FROM `tickets`';
+    $stmt = $conn->prepare($sql);
+    $stmt->execute();
+    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    echo json_encode($data);
+}
+
+// 取得票種數據
+function getTicketData()
+{
+    global $conn;
+    $sql = 'SELECT `tickets_num` FROM `order_details`';
+    $stmt = $conn->prepare($sql);
+    $stmt->execute();
+    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    echo json_encode($data);
+}
+
+/* 票種 -> 結束 */

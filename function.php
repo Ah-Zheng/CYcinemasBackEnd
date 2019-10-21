@@ -6,7 +6,7 @@ require_once 'config.php';
 use Verot\Upload\Upload;
 
 // 上傳圖片
-function uploadImg($file, $name, $dirName)
+function uploadImg($file, $name, $dirName, int $big_x, int $big_y, int $small_x, int $small_y)
 {
     $handle = new Upload($file);
     if ($handle->uploaded) {
@@ -14,8 +14,8 @@ function uploadImg($file, $name, $dirName)
         $handle->file_new_name_body = $name;
         $handle->file_overwrite = true;
         $handle->image_resize = true;
-        $handle->image_x = 400;
-        $handle->image_y = 530;
+        $handle->image_x = $big_x;
+        $handle->image_y = $big_y;
         $handle->image_convert = 'png';
         $handle->image_ratio_crop = true;
         $handle->png_compression = 3;
@@ -28,8 +28,8 @@ function uploadImg($file, $name, $dirName)
         $handle->file_new_name_body = $name;
         $handle->file_overwrite = true;
         $handle->image_resize = true;
-        $handle->image_x = 300;
-        $handle->image_y = 400;
+        $handle->image_x = $small_x;
+        $handle->image_y = $small_y;
         $handle->image_convert = 'png';
         $handle->image_ratio_crop = true;
         $handle->png_compression = 3;

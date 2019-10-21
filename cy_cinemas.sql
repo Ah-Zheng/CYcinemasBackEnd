@@ -175,7 +175,7 @@ CREATE TABLE `point_record`
   `id` INT AUTO_INCREMENT NOT NULL,
   `members_id` INT,
   `update_point` INT,
-  `current_point` INT,
+  `current_point` INT, -- 交易後點數
   `desc` VARCHAR(50),
   `update_time` TIMESTAMP,
   PRIMARY KEY (`id`)
@@ -199,6 +199,7 @@ CREATE TABLE `screening_seats` (
   `id` INT AUTO_INCREMENT NOT NULL,
   `screenings_id` INT,
   `seatName` VARCHAR(5),
+  `available` TINYINT(1),
   PRIMARY KEY (`id`),
   INDEX (`seatName`)
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
