@@ -1,11 +1,11 @@
 <?php
+
 require_once '../header.php';
 // require_once '../function.php';
 require_once '../database.php';
 
 $method = $_SERVER['REQUEST_METHOD'];
 $url = explode('/', rtrim($_GET['url'], '/'));
-
 
 switch ($method) {
     case 'POST':
@@ -44,10 +44,11 @@ switch ($method) {
         echo 'XXXX.';
 }
 
-function showPoint() {
+function showPoint()
+{
     global $conn;
     $account = $_POST['account'];
-    $sql = "SELECT `id` FROM `members` WHERE `account` = :account";
+    $sql = 'SELECT `id` FROM `members` WHERE `account` = :account';
     $stmt = $conn->prepare($sql);
     $stmt->bindParam(':account', $account);
     $stmt->execute();
@@ -58,7 +59,7 @@ function showPoint() {
 
     $id = $targetId[0]->id;
 
-    $sql = "SELECT * FROM `point_record` WHERE `members_id` = :id";
+    $sql = 'SELECT * FROM `point_record` WHERE `members_id` = :id GROUP BY `id` DESC';
     $stmt = $conn->prepare($sql);
     $stmt->bindParam(':id', $id);
     $stmt->execute();
@@ -66,10 +67,11 @@ function showPoint() {
     echo json_encode($data);
 }
 
-function showDetail() {
+function showDetail()
+{
     global $conn;
     $account = $_POST['account'];
-    $sql = "SELECT * FROM `order_details` WHERE `members_account` = :account";
+    $sql = 'SELECT * FROM `order_details` WHERE `members_account` = :account GROUP BY `id` DESC';
     $stmt = $conn->prepare($sql);
     $stmt->bindParam(':account', $account);
     $stmt->execute();
@@ -77,12 +79,13 @@ function showDetail() {
     echo json_encode($data);
 }
 
-function saveNewPwd() {
+function saveNewPwd()
+{
     global $conn;
     $nowAcc = $_POST['nowAcc'];
     $oldPwd = $_POST['oldPwd'];
     $newPwd = $_POST['newPwd'];
-    $sql = "SELECT `password` FROM `members` WHERE `account` = :nowAcc";
+    $sql = 'SELECT `password` FROM `members` WHERE `account` = :nowAcc';
     $stmt = $conn->prepare($sql);
     $stmt->bindParam(':nowAcc', $nowAcc);
     $stmt->execute();
@@ -91,11 +94,11 @@ function saveNewPwd() {
     // 舊帳號驗證正確 -> 進入修改密碼程序  舊帳號驗證錯誤-> 直接回傳錯誤訊息
     if (password_verify($oldPwd, $pwdInDb['password'])) {
         $passwordHash = password_hash($newPwd, PASSWORD_BCRYPT);
-        $sql = "UPDATE `members` SET `password` = :password WHERE `account` = :nowAcc";
+        $sql = 'UPDATE `members` SET `password` = :password WHERE `account` = :nowAcc';
         $stmt = $conn->prepare($sql);
         $stmt->bindParam(':password', $passwordHash);
         $stmt->bindParam(':nowAcc', $nowAcc);
-        
+
         if ($stmt->execute()) {
             $data = 'success';
         } else {
@@ -107,13 +110,14 @@ function saveNewPwd() {
     echo json_encode($data);
 }
 
-function saveEditData() {
+function saveEditData()
+{
     global $conn;
     $nowAcc = $_POST['nowAcc'];
     $newName = $_POST['newName'];
     $newEmail = $_POST['newEmail'];
     $newPhone = $_POST['newPhone'];
-    $sql = "UPDATE `members` SET `name` = :newName, `email` = :newEmail, `phone` = :newPhone WHERE `account` = :nowAcc";
+    $sql = 'UPDATE `members` SET `name` = :newName, `email` = :newEmail, `phone` = :newPhone WHERE `account` = :nowAcc';
     $stmt = $conn->prepare($sql);
     $stmt->bindParam(':newName', $newName);
     $stmt->bindParam(':newEmail', $newEmail);
@@ -127,10 +131,11 @@ function saveEditData() {
     echo json_encode($data);
 }
 
-function getUserData() {
+function getUserData()
+{
     global $conn;
     $account = $_POST['account'];
-    $sql = "SELECT `name`,`account`,`password`,`email`,`phone` FROM `members` WHERE `account` = :account";
+    $sql = 'SELECT `name`,`account`,`password`,`email`,`phone` FROM `members` WHERE `account` = :account';
     $stmt = $conn->prepare($sql);
     $stmt->bindParam(':account', $account);
     $stmt->execute();
@@ -138,13 +143,14 @@ function getUserData() {
     echo json_encode($fullData);
 }
 
-function checkLogin() {
+function checkLogin()
+{
     // echo "LOGIN";
     global $conn;
     $account = $_POST['account'];
     $password = $_POST['password'];
     // 檢查帳號 帳號正確後 再檢查密碼
-    $sql = "SELECT count(*) FROM `members` WHERE `account` = :account";
+    $sql = 'SELECT count(*) FROM `members` WHERE `account` = :account';
     $stmt = $conn->prepare($sql);
     $stmt->bindParam(':account', $account);
     $stmt->execute();
@@ -152,16 +158,16 @@ function checkLogin() {
     if ($accIsExist == 1) {
         // 帳號正確 檢查密碼
         // 根據帳號抓出對應的密碼(hash後) -> 透過password_verify 將明文與密文比對 -> 相符 登入成功 不相符 登入失敗
-        $sql = "SELECT `password` FROM `members` WHERE `account` = :account";
+        $sql = 'SELECT `password` FROM `members` WHERE `account` = :account';
         $stmt = $conn->prepare($sql);
         $stmt->bindParam(':account', $account);
         $stmt->execute();
         $pwdInDb = $stmt->fetch(PDO::FETCH_ASSOC);
-        
+
         // print_r($pwdIsExist);
         if (password_verify($password, $pwdInDb['password'])) {
             // 帳密正確 回傳使用者資料
-            $sql = "SELECT `name`,`account`,`email`,`phone` FROM `members` WHERE `account` = :account";
+            $sql = 'SELECT `name`,`account`,`email`,`phone` FROM `members` WHERE `account` = :account';
             $stmt = $conn->prepare($sql);
             $stmt->bindParam(':account', $account);
             $stmt->execute();
@@ -169,20 +175,20 @@ function checkLogin() {
             echo json_encode($userData);
         } else {
             // echo "ACC OO PWD XX";
-            echo "Failed";
+            echo 'Failed';
         }
     } else {
         // echo "ACC XX END";
-        echo "Failed";
+        echo 'Failed';
     }
-
 }
 
-function checkAccount() {
+function checkAccount()
+{
     global $conn;
     $account = $_GET['url'];
     // echo $account;
-    $sql = "SELECT count(*) FROM `members` WHERE `account` = :account";
+    $sql = 'SELECT count(*) FROM `members` WHERE `account` = :account';
     $stmt = $conn->prepare($sql);
     $stmt->bindParam(':account', $account);
     $stmt->execute();
@@ -190,7 +196,8 @@ function checkAccount() {
     echo $rowCount; // 回傳查詢結果(查到的列數)
 }
 
-function saveNewMember() {
+function saveNewMember()
+{
     global $conn;
     $name = $_POST['name'];
     $account = $_POST['account'];
@@ -201,13 +208,13 @@ function saveNewMember() {
 
     // 各欄位驗證規則
     $nameIsValid = preg_match("/^[^.,\/#!$%\^&\*;:{}=\-_`~()@<>\s]{1,}$/", $name);
-    $accIsValid = preg_match("/^[A-Za-z0-9]{5,}$/", $account);
-    $pwdIsValid = preg_match("/^[A-Za-z0-9]{5,}$/", $password);
+    $accIsValid = preg_match('/^[A-Za-z0-9]{5,}$/', $account);
+    $pwdIsValid = preg_match('/^[A-Za-z0-9]{5,}$/', $password);
     $emailPattern = preg_match("/^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z]+$/", $email);
     $phonePattern = preg_match("/^09\d{2}-?\d{3}-?\d{3}$/", $phone);
 
     // 帳號存在性驗證
-    $sql = "SELECT count(*) FROM `members` WHERE `account` = :account";
+    $sql = 'SELECT count(*) FROM `members` WHERE `account` = :account';
     $stmt = $conn->prepare($sql);
     $stmt->bindParam(':account', $account);
     $stmt->execute();
@@ -223,11 +230,11 @@ function saveNewMember() {
         $stmt->bindParam(':phone', $phone);
 
         if ($stmt->execute()) {
-            echo "會員註冊成功";
+            echo '會員註冊成功';
         } else {
-            echo "會員註冊失敗";
+            echo '會員註冊失敗';
         }
     } else {
-        echo "會員註冊資訊有誤，請再確認";
+        echo '會員註冊資訊有誤，請再確認';
     }
 }
