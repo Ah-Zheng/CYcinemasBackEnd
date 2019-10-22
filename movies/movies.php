@@ -42,7 +42,7 @@ function getMovies($movieId = '')
 {
     global $conn;
     if ($movieId == '') { // 判斷有無電影id，沒有就取得所有電影資料
-        $sql = 'SELECT DISTINCT m.`id`, m.`name`, m.`enname`, m.`rating`, m.`run_time`, m.`info`, m.`actor`, m.`genre`, m.`play_date`, m.`poster`, m.`trailer`, m.`show_status` FROM `movies` m JOIN `movie_time` mt ON m.`encoded_id` = mt.`movies_encoded_id` WHERE mt.`theaters_name` = "國賓影城@台北長春廣場"';
+        $sql = 'SELECT DISTINCT m.`id`,m.`encoded_id`, m.`name`, m.`enname`, m.`rating`, m.`run_time`, m.`info`, m.`actor`, m.`genre`, m.`play_date`, m.`poster`, m.`trailer`, m.`show_status` FROM `movies` m JOIN `movie_time` mt ON m.`encoded_id` = mt.`movies_encoded_id` WHERE mt.`theaters_name` = "國賓影城@台北長春廣場"';
         $stmt = $conn->prepare($sql);
     } else {
         $movieId = intval($movieId);

@@ -10,26 +10,33 @@ if($url[0]){
     switch ($url[0]) {
         
         case 'saveOrder':
-        saveOrderDetail();
+            saveOrderDetail();
             break;
 
         case 'updateMemberPoint':
-        updateMemberPoint();
+            updateMemberPoint();
             break;
 
         case 'getSellOut':
-        getSellOut();
+            getSellOut();
             break;
 
         case 'tapGetSellOut':
-        tapGetSellOut();
+            tapGetSellOut();
             break;
 
         case 'getScreeningSeat':
-        getScreeningSeat($url[1]);
+            getScreeningSeat($url[1]);
             break;
-        case 'getPointRecord':
-        getPointRecord();
+
+        case 'lockScreeningSeat':
+            lockScreeningSeat();
+            break;
+
+        case 'unlockScreeningSeat':
+            unlockScreeningSeat();
+                break;    
+        
         default:
             break;
     }
@@ -228,53 +235,6 @@ function updateMemberPoint(){
 
 }
 
-function getPointRecord(){
-    global $conn;
-    // $frontData = isset($_POST['JSONData'])?$_POST['JSONData']:'no post';
-    // $list = json_decode($frontData);    
-    // $account         = $list->account;    
-    // $point = floor($list->real/100);
-
-    // $stmt = $conn->query("SELECT `id`,`point` FROM `members` WHERE account = '$list->account'");
-    // $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    // $json = json_encode($result);
-    // $json = json_decode($json);
-    
-
-    // $id = $json[0]->id;
-    // $cuPoint = $json[0]->point +$point;
-    // $sql = "INSERT INTO `point_record` (`members_id`, `update_point`, `current_point`, `desc`) VALUES
-    //  (:members_id,:update_point,:current_point, '購票獲得點數')";
-    // $stmt = $conn->prepare($sql);
-    // $stmt->bindParam(':members_id',$id);
-    // $stmt->bindParam(':update_point',$point);
-    // $stmt->bindParam(':current_point',$cuPoint);
-
-    // $exec = $stmt->execute();
-    // if($exec){
-    //     echo "insert point_record OK";
-    // }else{
-    //     echo "insert failed: " . $conn->errorInfo()[2];
-    // }
-    
-
-// 查詢所有紀錄
-    $sql = "SELECT * FROM point_record";
-        $stmt = $conn->query($sql);
-        if($stmt){
-            $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            var_dump($data);
-        }else{
-            $error = $conn->errorInfo();
-            echo "查詢失敗，錯誤訊息：".$error[2];
-        }
-
-
-
-}
-
-
-
 
 function getScreeningSeat($scrID=''){
     global $conn;
@@ -289,7 +249,81 @@ function getScreeningSeat($scrID=''){
             echo "查詢失敗，錯誤訊息：".$error[2];
         }
     }else{
-        $sql = "SELECT * FROM screening_seats";
+        $sql = "SELECT * FROM screening_seats WHERE `screenings_id` = $scrID";
+        $stmt = $conn->query($sql);
+        if($stmt){
+            $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            var_dump($data);
+        }else{
+            $error = $conn->errorInfo();
+            echo "查詢失敗，錯誤訊息：".$error[2];
+        }
     }
 }
+
+function lockScreeningSeat(){
+    global $conn;
+    $screenings_id = isset($_POST['screeningID'])?$_POST['screeningID']:'no post';
+    $choosedSeat = isset($_POST['choosedSeat'])?$_POST['choosedSeat']:'no post';
+
+    //經過處理後變成'A1','A2',...的形式才能夠放進查詢子句
+    $seatNumber = count(explode(",",$choosedSeat));
+    $seatName = str_replace(",","','",$choosedSeat);
+    $seatName = "'$seatName'";
+
+    $conn->beginTransaction();
+
+    $sql = "SELECT * FROM `screening_seats` WHERE `screenings_id` = '$screenings_id' AND `seatName` IN ($seatName) AND `available` = 1 FOR UPDATE";
+    $check = $conn->query($sql);
+    // if($check){
+    //     echo "OK"."<br>";
+    //     echo var_dump($check->fetchAll(PDO::FETCH_ASSOC));
+    // }else{
+    //     echo "not OK";
+    // }
+
+    if($check->rowCount() >= $seatNumber){      //先檢查這些位置是不是還是空的
+        $sql = "UPDATE `screening_seats` SET `available` = 0 WHERE `screenings_id` = '$screenings_id' AND `seatName` IN ($seatName)";
+        $exec = $conn->query($sql);
+        if($exec){
+            echo "update screening_seats OK.";
+            $conn->commit();
+        }else{
+            echo "update failed: " . $conn->errorInfo()[2];
+            $conn->rollBack();
+            exit();
+        }
+    }else{
+        echo "there are not enough seats."; 
+        $conn->rollBack();
+    }
+}
+
+function unlockScreeningSeat(){
+    global $conn;
+    $screenings_id = isset($_POST['screeningID'])?$_POST['screeningID']:'no post';
+    $choosedSeat = isset($_POST['choosedSeat'])?$_POST['choosedSeat']:'no post';
+
+    //經過處理後變成'A1','A2',...的形式才能夠放進查詢子句
+    $seatNumber = count(explode(",",$choosedSeat));
+    $seatName = str_replace(",","','",$choosedSeat);
+    $seatName = "'$seatName'";
+
+    $sql = "SELECT * FROM `screening_seats` WHERE `screenings_id` = '$screenings_id' AND `seatName` IN ($seatName) AND `available` = 0";
+    $check = $conn->query($sql);
+        if($check->rowCount() >= $seatNumber){      //先檢查這些位置數對不對
+
+        $sql = "UPDATE `screening_seats` SET `available` = 1 WHERE `screenings_id` = '$screenings_id' AND `seatName` IN ($seatName)";
+        $exec = $conn->query($sql);
+        if($exec){
+            echo "recover screening_seats OK.";
+        }else{
+            echo "recover failed: " . $conn->errorInfo()[2];
+            exit();
+        }
+    }else{
+        echo "there are no seats need to recover.";
+    }
+}
+
 ?>

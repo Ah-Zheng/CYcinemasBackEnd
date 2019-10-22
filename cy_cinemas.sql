@@ -64,7 +64,7 @@ CREATE TABLE `movies`
   `play_date` VARCHAR(20),
   `poster` TEXT,
   `trailer` TEXT,
-  `show_status` BOOLEAN DEFAULT 0,
+  `show_status` BOOLEAN DEFAULT 1,
   PRIMARY KEY (`id`),
   UNIQUE KEY (`encoded_id`)
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -200,6 +200,7 @@ CREATE TABLE `screening_seats` (
   `screenings_id` INT,
   `seatName` VARCHAR(5),
   `available` TINYINT(1),
+  `datetime`  TIMESTAMP,
   PRIMARY KEY (`id`),
   INDEX (`seatName`)
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

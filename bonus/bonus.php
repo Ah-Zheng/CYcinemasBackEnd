@@ -15,6 +15,8 @@ if($url[0]){
         case 'updateMemberPoint':
             updateMemberPoint($url[1]);
             break;
+        case 'getPointRecord':
+            getPointRecord($url[1]);
         default:
             break;
     }
@@ -126,5 +128,33 @@ function getProbability(){
     //各倍率中的機率，應和為1。依序是爆米花、飲料、套餐、5倍BAR、可愛爆米花、7倍BAR和10倍BAR
     $probabilty->bettingOddsArray = [0.4, 0.3, 0.2, 0.5, 0.03, 0.02, 0.01];    
     echo json_encode([$probabilty]);
+}
+
+function getPointRecord($mID=''){
+    global $conn;
+    
+// 查詢所有紀錄
+    if(!$mID){
+        $sql = "SELECT * FROM point_record";
+            $stmt = $conn->query($sql);
+            if($stmt){
+                $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                var_dump($data);
+            }else{
+                $error = $conn->errorInfo();
+                echo "查詢失敗，錯誤訊息：".$error[2];
+            }
+    }else{
+        $sql = "SELECT * FROM point_record WHERE `members_id` = $mID";
+            $stmt = $conn->query($sql);
+            if($stmt){
+                $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                var_dump($data);
+            }else{
+                $error = $conn->errorInfo();
+                echo "查詢失敗，錯誤訊息：".$error[2];
+            }
+    }
+
 }
 ?>
