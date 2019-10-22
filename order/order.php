@@ -15,12 +15,12 @@ if($url[0]){
         case 'getMovieDay':
             getMovieDay($url[1]);
             break;
-    
+
         case 'getMovieTime':
             getMovieTime($url[1]);
     
             break;
-            
+
         case 'getTickets':
             getTickets();
             break;
