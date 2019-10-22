@@ -60,7 +60,7 @@ function getTypeMovies($type, $show)
 {
     global $conn;
     if ($type == 'released') {
-        $sql = 'SELECT DISTINCT m.`id`, m.`name`, m.`enname`, m.`rating`, m.`run_time`, m.`info`, m.`actor`, m.`genre`, m.`play_date`, m.`poster`, m.`trailer`, m.`show_status` FROM `movies` m JOIN `movie_time` mt ON m.`encoded_id` = mt.`movies_encoded_id` WHERE mt.`theaters_name` = "國賓影城@台北長春廣場" AND `show_status` = :show';
+        $sql = 'SELECT DISTINCT m.`id`,m.`encoded_id`, m.`name`, m.`enname`, m.`rating`, m.`run_time`, m.`info`, m.`actor`, m.`genre`, m.`play_date`, m.`poster`, m.`trailer`, m.`show_status` FROM `movies` m JOIN `movie_time` mt ON m.`encoded_id` = mt.`movies_encoded_id` WHERE mt.`theaters_name` = "國賓影城@台北長春廣場" AND `show_status` = :show';
     } else {
         $sql = 'SELECT * FROM `movies` WHERE `show_status` = :show';
     }
