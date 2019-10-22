@@ -198,10 +198,12 @@ DROP TABLE IF EXISTS `screening_seats`;
 CREATE TABLE `screening_seats` (
   `id` INT AUTO_INCREMENT NOT NULL,
   `screenings_id` INT,
-  `seatName` VARCHAR(5),
+  `scr_seats_number` VARCHAR(15),
+  `seat_name` VARCHAR(5),
   `available` TINYINT(1),
   `datetime`  TIMESTAMP,
   PRIMARY KEY (`id`),
+  UNIQUE KEY (`scr_seats_number`),
   INDEX (`seatName`)
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
