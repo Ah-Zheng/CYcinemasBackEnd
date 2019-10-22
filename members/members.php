@@ -63,9 +63,10 @@ function resetPwd()
     if ($accIsValid && $emailIsValid && $pwdIsValid) {
 
         // 帳號存在性驗證
-        $sql = 'SELECT count(*) FROM `members` WHERE `account` = :account';
+        $sql = 'SELECT count(*) FROM `members` WHERE `account` = :account AND `email` = :email';
         $stmt = $conn->prepare($sql);
         $stmt->bindParam(':account', $account);
+        $stmt->bindParam(':email', $email);
         $stmt->execute();
         $rowCount = $stmt->fetchColumn();
 
@@ -79,10 +80,10 @@ function resetPwd()
             if ($stmt->execute()) {
                 echo '密碼重設成功';
             } else {
-                echo '密碼重設失敗';
+                echo '密碼重設失敗(stmt ERROR)';
             }
         } else {
-            echo '無此帳號，請確認輸入是否正確';
+            echo '密碼重設失敗，請確認帳號或信箱是否正確輸入';
         }
     } else {
         echo '密碼重設失敗，請確認輸入是否正確';
