@@ -91,8 +91,11 @@ function saveNewPwd()
     $stmt->execute();
     $pwdInDb = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    // 舊帳號驗證正確 -> 進入修改密碼程序  舊帳號驗證錯誤-> 直接回傳錯誤訊息
-    if (password_verify($oldPwd, $pwdInDb['password'])) {
+    // 修改會員密碼: 新密碼驗證規則
+    $pwdIsValid = preg_match('/^[A-Za-z0-9]{5,}$/', $newPwd);
+
+    // 舊帳號驗證正確 且新帳號通過REGEX -> 進入修改密碼程序  舊帳號驗證錯誤 OR 新帳號沒過REGEX -> 直接回傳錯誤訊息
+    if (password_verify($oldPwd, $pwdInDb['password']) && $pwdIsValid) {
         $passwordHash = password_hash($newPwd, PASSWORD_BCRYPT);
         $sql = 'UPDATE `members` SET `password` = :password WHERE `account` = :nowAcc';
         $stmt = $conn->prepare($sql);
@@ -117,18 +120,28 @@ function saveEditData()
     $newName = $_POST['newName'];
     $newEmail = $_POST['newEmail'];
     $newPhone = $_POST['newPhone'];
-    $sql = 'UPDATE `members` SET `name` = :newName, `email` = :newEmail, `phone` = :newPhone WHERE `account` = :nowAcc';
-    $stmt = $conn->prepare($sql);
-    $stmt->bindParam(':newName', $newName);
-    $stmt->bindParam(':newEmail', $newEmail);
-    $stmt->bindParam(':newPhone', $newPhone);
-    $stmt->bindParam(':nowAcc', $nowAcc);
-    if ($stmt->execute()) {
-        $data = 'success';
+
+    // 修改會員資料: 各欄位驗證規則
+    $nameIsValid = preg_match("/^[^.,\/#!$%\^&\*;:{}=\-_`~()@<>\s]{1,}$/", $newName);
+    $emailIsValid = preg_match("/^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z]+$/", $newEmail);
+    $phoneIsValid = preg_match("/^09\d{2}-?\d{3}-?\d{3}$/", $newPhone);
+
+    if ($nameIsValid && $emailIsValid && $phoneIsValid) {
+        $sql = 'UPDATE `members` SET `name` = :newName, `email` = :newEmail, `phone` = :newPhone WHERE `account` = :nowAcc';
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':newName', $newName);
+        $stmt->bindParam(':newEmail', $newEmail);
+        $stmt->bindParam(':newPhone', $newPhone);
+        $stmt->bindParam(':nowAcc', $nowAcc);
+        if ($stmt->execute()) {
+            $data = 'success';
+        } else {
+            $data = 'failed';
+        }
+        echo json_encode($data);
     } else {
-        $data = 'failed';
+        echo '修改會員資料失敗，請確認輸入資料是否有誤';
     }
-    echo json_encode($data);
 }
 
 function getUserData()
