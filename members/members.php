@@ -32,6 +32,9 @@ switch ($method) {
             case 'showPoint':
                 showPoint();
                 break;
+            case 'resetPwd':
+                resetPwd();
+                break;
             default:
                 echo 'ERROR';
         }
@@ -42,6 +45,49 @@ switch ($method) {
         break;
     default:
         echo 'XXXX.';
+}
+
+function resetPwd()
+{
+    global $conn;
+    $account = $_POST['resetAcc'];
+    $email = $_POST['resetEmail'];
+    $password = $_POST['resetPwd'];
+
+
+    $accIsValid = preg_match('/^[A-Za-z0-9]{5,}$/', $account);
+    $emailIsValid = preg_match("/^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z]+$/", $email);
+    $pwdIsValid = preg_match('/^[A-Za-z0-9]{5,}$/', $password);
+
+    // 通過驗證 -> 再檢查此帳號是否存在
+    if ($accIsValid && $emailIsValid && $pwdIsValid) {
+
+        // 帳號存在性驗證
+        $sql = 'SELECT count(*) FROM `members` WHERE `account` = :account';
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':account', $account);
+        $stmt->execute();
+        $rowCount = $stmt->fetchColumn();
+
+        if ($rowCount == 1) {
+            $passwordHash = password_hash($password, PASSWORD_BCRYPT);
+            $sql = 'UPDATE `members` SET `password` = :password WHERE `account` = :account';
+            $stmt = $conn->prepare($sql);
+            $stmt->bindParam(':password', $passwordHash);
+            $stmt->bindParam(':account', $account);
+
+            if ($stmt->execute()) {
+                echo '密碼重設成功';
+            } else {
+                echo '密碼重設失敗';
+            }
+        } else {
+            echo '無此帳號，請確認輸入是否正確';
+        }
+    } else {
+        echo '密碼重設失敗，請確認輸入是否正確';
+    }
+
 }
 
 function showPoint()
