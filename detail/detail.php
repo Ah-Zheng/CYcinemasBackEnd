@@ -192,13 +192,15 @@ function updateMemberPoint(){
 
     // 更新會員點數
     $frontData = isset($_POST['JSONData'])?$_POST['JSONData']:'no post';
+    $usePoint = isset($_POST['usePoint'])?$_POST['usePoint']:'no post';
     $list = json_decode($frontData);    
     $account         = $list->account;    
     $point = floor($list->real/100);
 
-    $sql = "UPDATE `members` SET `point` = `point` + :pt WHERE `account` = :account";
+    $sql = "UPDATE `members` SET `point` = `point` + :pt - :usePt WHERE `account` = :account";
     $stmt = $conn->prepare($sql);
     $stmt->bindParam(':pt',$point);
+    $stmt->bindParam(':usePt',$usePoint);
     $stmt->bindParam(':account',$account);
     $exec = $stmt->execute();
 
@@ -218,8 +220,9 @@ function updateMemberPoint(){
 
     $id = $json[0]->id;
     $cuPoint = $json[0]->point;
+    $point = $point-$usePoint;
     $sql = "INSERT INTO `point_record` (`members_id`, `update_point`, `current_point`, `desc`) VALUES
-     (:members_id,:update_point,:current_point, '購票獲得點數')";
+     (:members_id,:update_point,:current_point, '購票點數異動')";
     $stmt = $conn->prepare($sql);
     $stmt->bindParam(':members_id',$id);
     $stmt->bindParam(':update_point',$point);
@@ -273,7 +276,7 @@ function lockScreeningSeat(){
 
     $conn->beginTransaction();
 
-    $sql = "SELECT * FROM `screening_seats` WHERE `screenings_id` = '$screenings_id' AND `seatName` IN ($seatName) AND `available` = 1 FOR UPDATE";
+    $sql = "SELECT * FROM `screening_seats` WHERE `screenings_id` = '$screenings_id' AND `seat_name` IN ($seatName) AND `available` = 1 FOR UPDATE";
     $check = $conn->query($sql);
     // if($check){
     //     echo "OK"."<br>";
@@ -283,7 +286,7 @@ function lockScreeningSeat(){
     // }
 
     if($check->rowCount() >= $seatNumber){      //先檢查這些位置是不是還是空的
-        $sql = "UPDATE `screening_seats` SET `available` = 0 WHERE `screenings_id` = '$screenings_id' AND `seatName` IN ($seatName)";
+        $sql = "UPDATE `screening_seats` SET `available` = 0 WHERE `screenings_id` = '$screenings_id' AND `seat_name` IN ($seatName)";
         $exec = $conn->query($sql);
         if($exec){
             echo "update screening_seats OK.";
@@ -309,11 +312,11 @@ function unlockScreeningSeat(){
     $seatName = str_replace(",","','",$choosedSeat);
     $seatName = "'$seatName'";
 
-    $sql = "SELECT * FROM `screening_seats` WHERE `screenings_id` = '$screenings_id' AND `seatName` IN ($seatName) AND `available` = 0";
+    $sql = "SELECT * FROM `screening_seats` WHERE `screenings_id` = '$screenings_id' AND `seat_name` IN ($seatName) AND `available` = 0";
     $check = $conn->query($sql);
         if($check->rowCount() >= $seatNumber){      //先檢查這些位置數對不對
 
-        $sql = "UPDATE `screening_seats` SET `available` = 1 WHERE `screenings_id` = '$screenings_id' AND `seatName` IN ($seatName)";
+        $sql = "UPDATE `screening_seats` SET `available` = 1 WHERE `screenings_id` = '$screenings_id' AND `seat_name` IN ($seatName)";
         $exec = $conn->query($sql);
         if($exec){
             echo "recover screening_seats OK.";

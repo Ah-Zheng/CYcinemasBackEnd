@@ -30,7 +30,7 @@ if($url[0]){
             
             break;
         case 'getScreeningID':
-        getScreeningID($url[1],$url[2],$url[3]);
+            getScreeningID($url[1],$url[2],$url[3]);
         
             break;
         default:
@@ -59,19 +59,27 @@ function getMovies(){
     // echo json_encode(mysqli_fetch_all($result, MYSQLI_ASSOC));
 }
 
-function getMovieDay($id){
+function getMovieDay($id=''){
     global $conn;
 
     $encoded_id = htmlspecialchars($id);
 
-    $sql = "SELECT `weekday`, `date` FROM `movie_day` JOIN `movies` ON `movies_encoded_id` = `encoded_id` where `movies_encoded_id` = :movies_encoded_id";
+    if($id == ''){
+        $sql = "SELECT * FROM `movie_day`";
+        $stmt = $conn->query($sql);
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        echo json_encode($data);
+    }else{
+        $sql = "SELECT `weekday`, `date` FROM `movie_day` JOIN `movies` ON `movies_encoded_id` = `encoded_id` where `movies_encoded_id` = :movies_encoded_id";
+    
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':movies_encoded_id', $encoded_id);
+        $stmt->execute();
+    
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        echo json_encode($data);
 
-    $stmt = $conn->prepare($sql);
-    $stmt->bindParam(':movies_encoded_id', $encoded_id);
-    $stmt->execute();
-
-    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    echo json_encode($data);
+    }
 
     // $result = $conn -> query("SELECT weekday,date FROM movie_day join movies on movies_encoded_id = encoded_id where movies_encoded_id = '$encoded_id'");
     // echo json_encode(mysqli_fetch_all($result, MYSQLI_ASSOC));
@@ -79,7 +87,7 @@ function getMovieDay($id){
     
 }
 
-function getMovieTime($id){
+function getMovieTime($id=''){
     global $conn;
 
     $encoded_id = htmlspecialchars($id);
