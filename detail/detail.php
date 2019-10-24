@@ -2,46 +2,59 @@
 require_once '../header.php';
 require_once '../database.php';
 
+$method = $_SERVER['REQUEST_METHOD'];
 $url = explode("/",rtrim($_GET['url'],"/")); 
 
+switch($method){
+    case 'POST':
+        switch ($url[0]) {
+            case 'saveOrder':
+                saveOrderDetail();
+                break;
 
-if($url[0]){
-    
-    switch ($url[0]) {
-        
-        case 'saveOrder':
-            saveOrderDetail();
-            break;
+            case 'updateMemberPoint':
+                updateMemberPoint();
+                break;
 
-        case 'updateMemberPoint':
-            updateMemberPoint();
-            break;
+            case 'getSellOut':
+                getSellOut();
+                break;
 
-        case 'getSellOut':
-            getSellOut();
-            break;
+            case 'tapGetSellOut':
+                tapGetSellOut();
+                break;
 
-        case 'tapGetSellOut':
-            tapGetSellOut();
-            break;
 
-        case 'getScreeningSeat':
-            getScreeningSeat($url[1]);
-            break;
+            case 'lockScreeningSeat':
+                lockScreeningSeat();
+                break;
 
-        case 'lockScreeningSeat':
-            lockScreeningSeat();
-            break;
+            case 'unlockScreeningSeat':
+                unlockScreeningSeat();
+                break;
+            
+            case 'testOrderSeat':
+                testOrderSeat();
+                break;
 
-        case 'unlockScreeningSeat':
-            unlockScreeningSeat();
-                break;    
-        
+            default:
+                break;
+        }
+        break;
+    case 'GET':
+        switch ($url[0]){
+            case 'getScreeningSeat':
+                getScreeningSeat($url[1]);
+                break;
+
+            default:
+                break;
+        }
+        break;
         default:
+            echo("What do you need?");
             break;
-    }
-}else{
-    echo("What do you need?");
+
 }
 
 // $conn -> close();
@@ -285,7 +298,7 @@ function lockScreeningSeat(){
     //     echo "not OK";
     // }
 
-    if($check->rowCount() >= $seatNumber){      //先檢查這些位置是不是還是空的
+    if($check->rowCount() >= $seatNumber){      //先檢查這些位置是不是都能用
         $sql = "UPDATE `screening_seats` SET `available` = 0 WHERE `screenings_id` = '$screenings_id' AND `seat_name` IN ($seatName)";
         $exec = $conn->query($sql);
         if($exec){
@@ -296,7 +309,26 @@ function lockScreeningSeat(){
             $conn->rollBack();
             exit();
         }
-    }else{
+    }else{      //假如不能用判斷是不是超過時間了
+        $sql = "SELECT * FROM `screening_seats` WHERE `screenings_id` = '$screenings_id' AND `seat_name` IN ($seatName) AND addtime(`datetime`,'00:00:10') <= now()";
+        $check = $conn->query($sql);
+        if($check->rowCount() >= $seatNumber){      //再次檢查是不是時間都超過選定時間了，如果超過就回復
+
+            $sql = "UPDATE `screening_seats` SET `available` = 1 WHERE `screenings_id` = '$screenings_id' AND `seat_name` IN ($seatName)";
+            $exec = $conn->query($sql);
+            if($exec){
+
+                $sql = "UPDATE `screening_seats` SET `available` = 0 WHERE `screenings_id` = '$screenings_id' AND `seat_name` IN ($seatName)";
+                $conn->query($sql);
+                echo "update screening_seats OK.";
+                $conn->commit();
+                exit();
+            }else{
+                echo "update failed: " . $conn->errorInfo()[2];
+                $conn->rollBack();
+                exit();
+            }
+        }
         echo "there are not enough seats."; 
         $conn->rollBack();
     }
@@ -327,6 +359,30 @@ function unlockScreeningSeat(){
     }else{
         echo "there are no seats need to recover.";
     }
+}
+
+function testOrderSeat(){
+    global $conn;
+    $screenings_id = isset($_POST['screeningID'])?$_POST['screeningID']:'no post';
+    $choosedSeat = isset($_POST['choosedSeat'])?$_POST['choosedSeat']:'no post';
+
+    //經過處理後變成'A1','A2',...的形式才能夠放進查詢子句
+    $seatNumber = count(explode(",",$choosedSeat));
+    $seatName = str_replace(",","','",$choosedSeat);
+    $seatName = "'$seatName'";
+
+    $sql = "SELECT `seat` FROM `order_details` WHERE `screenings_id` = '$screenings_id' ";
+    $stmt = $conn->query($sql);
+    $seatCombine = '';
+  
+    while($result = $stmt->fetch(PDO::FETCH_ASSOC)){
+        $seatCombine .=$result['seat'].",";     //把座位用,連接
+    }
+        $seatCombine = rtrim($seatCombine,","); //去掉最後一個,
+       
+        var_dump(explode(",",$seatCombine));
+    // var_dump($seatArray);
+    exit();
 }
 
 ?>
