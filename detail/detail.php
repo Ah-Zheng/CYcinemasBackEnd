@@ -277,62 +277,76 @@ function getScreeningSeat($scrID=''){
     }
 }
 
-function lockScreeningSeat(){
-    global $conn;
-    $screenings_id = isset($_POST['screeningID'])?$_POST['screeningID']:'no post';
-    $choosedSeat = isset($_POST['choosedSeat'])?$_POST['choosedSeat']:'no post';
+// function lockScreeningSeat(){
+//     global $conn;
+//     $screenings_id = isset($_POST['screeningID'])?$_POST['screeningID']:'no post';
+//     $choosedSeat = isset($_POST['choosedSeat'])?$_POST['choosedSeat']:'no post';
 
-    //經過處理後變成'A1','A2',...的形式才能夠放進查詢子句
-    $seatNumber = count(explode(",",$choosedSeat));
-    $seatName = str_replace(",","','",$choosedSeat);
-    $seatName = "'$seatName'";
+//     //經過處理後變成'A1','A2',...的形式才能夠放進查詢子句
+//     $seatNumber = count(explode(",",$choosedSeat));
+//     $seatName = str_replace(",","','",$choosedSeat);
+//     $seatName = "'$seatName'";
 
-    $conn->beginTransaction();
+//     $conn->beginTransaction();
 
-    $sql = "SELECT * FROM `screening_seats` WHERE `screenings_id` = '$screenings_id' AND `seat_name` IN ($seatName) AND `available` = 1 FOR UPDATE";
-    $check = $conn->query($sql);
-    // if($check){
-    //     echo "OK"."<br>";
-    //     echo var_dump($check->fetchAll(PDO::FETCH_ASSOC));
-    // }else{
-    //     echo "not OK";
-    // }
+//     $sql = "SELECT * FROM `screening_seats` WHERE `screenings_id` = '$screenings_id' AND `seat_name` IN ($seatName) AND `available` = 1 FOR UPDATE";
+//     $check = $conn->query($sql);
 
-    if($check->rowCount() >= $seatNumber){      //先檢查這些位置是不是都能用
-        $sql = "UPDATE `screening_seats` SET `available` = 0 WHERE `screenings_id` = '$screenings_id' AND `seat_name` IN ($seatName)";
-        $exec = $conn->query($sql);
-        if($exec){
-            echo "update screening_seats OK.";
-            $conn->commit();
-        }else{
-            echo "update failed: " . $conn->errorInfo()[2];
-            $conn->rollBack();
-            exit();
-        }
-    }else{      //假如不能用判斷是不是超過時間了
-        $sql = "SELECT * FROM `screening_seats` WHERE `screenings_id` = '$screenings_id' AND `seat_name` IN ($seatName) AND addtime(`datetime`,'00:00:10') <= now()";
-        $check = $conn->query($sql);
-        if($check->rowCount() >= $seatNumber){      //再次檢查是不是時間都超過選定時間了，如果超過就回復
 
-            $sql = "UPDATE `screening_seats` SET `available` = 1 WHERE `screenings_id` = '$screenings_id' AND `seat_name` IN ($seatName)";
-            $exec = $conn->query($sql);
-            if($exec){
+//     if($check->rowCount() >= $seatNumber){      //先檢查這些位置是不是都能用
+//         $sql = "UPDATE `screening_seats` SET `available` = 0 WHERE `screenings_id` = '$screenings_id' AND `seat_name` IN ($seatName)";
+//         $exec = $conn->query($sql);
+//         if($exec){
+//             echo "update screening_seats OK.";
+//             $conn->commit();
+//         }else{
+//             echo "update failed: " . $conn->errorInfo()[2];
+//             $conn->rollBack();
+//             exit();
+//         }
+//     }else{      //假如不能用判斷是不是超過時間了
+//         $sql = "SELECT * FROM `screening_seats` WHERE `screenings_id` = '$screenings_id' AND `seat_name` IN ($seatName) AND `available` = 0 AND addtime(`datetime`,'00:00:10') <= now()";
+//         $checkNotAvailable = $conn->query($sql);
+//         $sql = "SELECT * FROM `screening_seats` WHERE `screenings_id` = '$screenings_id' AND `seat_name` IN ($seatName) AND `available` = 1";
+//         $checkAvailable = $conn->query($sql);
+//         $availableSeat = $checkNotAvailable->rowCount() + $checkAvailable->rowCount();      //過期沒人選的座位+可以用的座位數
 
-                $sql = "UPDATE `screening_seats` SET `available` = 0 WHERE `screenings_id` = '$screenings_id' AND `seat_name` IN ($seatName)";
-                $conn->query($sql);
-                echo "update screening_seats OK.";
-                $conn->commit();
-                exit();
-            }else{
-                echo "update failed: " . $conn->errorInfo()[2];
-                $conn->rollBack();
-                exit();
-            }
-        }
-        echo "there are not enough seats."; 
-        $conn->rollBack();
-    }
-}
+//         if($availableSeat >= $seatNumber){      //可以用的座位數跟想要用的座位數是否相等
+//             //檢查訂單中的座位
+//             $sql = "SELECT `seat` FROM `order_details` WHERE `screenings_id` = '$screenings_id' ";
+//             $stmt = $conn->query($sql);
+//             $seatCombine = '';
+          
+//             while($result = $stmt->fetch(PDO::FETCH_ASSOC)){
+//                 $seatCombine .=$result['seat'].",";     //把座位用,連接
+//             }
+
+//             $seatCombine = rtrim($seatCombine,","); //去掉最後一個,  
+//             $seatCombine = str_replace(",","','",$seatCombine);
+//             $seatCombine = "('$seatCombine')";      //將座位合併成("A1","A2",...)的格式
+
+//             $sql = "SELECT `screening_seats` WHERE `screenings_id` = '$screenings_id' AND `seat_name` IN ($seatName)";
+
+
+//             $sql = "UPDATE `screening_seats` SET `available` = 1 WHERE `screenings_id` = '$screenings_id' AND `seat_name` IN ($seatName)";
+//             $exec = $conn->query($sql);
+//             if($exec){
+
+//                 $sql = "UPDATE `screening_seats` SET `available` = 0 WHERE `screenings_id` = '$screenings_id' AND `seat_name` IN ($seatName)";
+//                 $conn->query($sql);
+//                 echo "update screening_seats OK.";
+//                 $conn->commit();
+//                 exit();
+//             }else{
+//                 echo "update failed: " . $conn->errorInfo()[2];
+//                 $conn->rollBack();
+//                 exit();
+//             }
+//         }
+//         echo "there are not enough seats."; 
+//         $conn->rollBack();
+//     }
+// }
 
 function unlockScreeningSeat(){
     global $conn;
@@ -361,13 +375,15 @@ function unlockScreeningSeat(){
     }
 }
 
-function testOrderSeat(){
+function lockScreeningSeat(){
     global $conn;
     $screenings_id = isset($_POST['screeningID'])?$_POST['screeningID']:'no post';
     $choosedSeat = isset($_POST['choosedSeat'])?$_POST['choosedSeat']:'no post';
 
     //經過處理後變成'A1','A2',...的形式才能夠放進查詢子句
-    $seatNumber = count(explode(",",$choosedSeat));
+    $choosedSeatArray = explode(",",$choosedSeat);      //被選的座位的陣列
+    $seatNumber = count($choosedSeatArray);
+
     $seatName = str_replace(",","','",$choosedSeat);
     $seatName = "'$seatName'";
 
@@ -379,10 +395,51 @@ function testOrderSeat(){
         $seatCombine .=$result['seat'].",";     //把座位用,連接
     }
         $seatCombine = rtrim($seatCombine,","); //去掉最後一個,
-       
-        var_dump(explode(",",$seatCombine));
-    // var_dump($seatArray);
-    exit();
+        $seatCombineArray = explode(",",$seatCombine);      //訂單中同個scr_id的所有座位的陣列
+        
+        $seatCompare = array_intersect($seatCombineArray,$choosedSeatArray);    //被選的跟訂單中有座位的合集
+  
+        if(count($seatCompare)==0){
+            $conn->beginTransaction();
+
+            $sql = "SELECT * FROM `screening_seats` WHERE `screenings_id` = '$screenings_id' AND `seat_name` IN ($seatName) AND `available` = 0 AND addtime(`datetime`,'00:01:00') <= now()";
+            $checkNotAvailable = $conn->query($sql);
+
+            $sql = "SELECT * FROM `screening_seats` WHERE `screenings_id` = '$screenings_id' AND `seat_name` IN ($seatName) AND `available` = 1";
+            $checkAvailable = $conn->query($sql);
+
+            $availableSeat = $checkNotAvailable->rowCount() + $checkAvailable->rowCount();      //過期沒人選的座位+可以用的座位數
+
+            if($availableSeat>=$seatNumber){
+                $sql = "UPDATE `screening_seats` SET `available` = 1 WHERE `screenings_id` = '$screenings_id' AND `seat_name` IN ($seatName)";
+                $exec = $conn->query($sql);
+                if($exec){
+                    $sql = "UPDATE `screening_seats` SET `available` = 0 WHERE `screenings_id` = '$screenings_id' AND `seat_name` IN ($seatName)";
+                    $exec = $conn->query($sql);
+                    if($exec){
+                        // echo $availableSeat;
+                        echo "update screening_seats OK.";
+                        $conn->commit();
+                        exit();
+                    }else{
+                        echo "there are not enough seats.";
+                        $conn->rollBack();
+                        exit();
+                    }
+                }else{
+                    echo "there are not enough seats.";
+                    $conn->rollBack();
+                    exit();
+                }
+            }else{
+                echo "there are not enough seats.";
+                exit();
+            }
+        }else{
+            echo "there are not enough seats.";
+            exit();
+        }
+        echo "there are not enough seats.";
 }
 
 ?>
