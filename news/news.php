@@ -76,7 +76,7 @@ function addNews()
             exit();
         } else {
             $date = date('Ymdhis');
-            uploadImg($_FILES['file'], $date, 'news'); // 上傳檔案 (檔案, 修改的檔名, 資料夾名稱)
+            uploadImg($_FILES['file'], $date, 'news', 400, 530, 300, 400); // 上傳檔案 (檔案, 修改的檔名, 資料夾名稱)
             $normalUrl = "https://cy-cinemas.ml/uploads/news/normal/{$date}.png";
             $thumbsUrl = "https://cy-cinemas.ml/uploads/news/thumbs/{$date}.png";
         }
