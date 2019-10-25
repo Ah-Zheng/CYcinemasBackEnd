@@ -24,6 +24,9 @@ switch ($method) {
                 exit();
             }
             getTicketType();
+        } elseif (isset($url[0]) && $url[0] == 'turnover') {
+            getTurnover();
+            exit();
         }
         break;
     case 'POST':
@@ -62,3 +65,19 @@ function getTicketData()
 }
 
 /* 票種 -> 結束 */
+
+/* 營業額 */
+
+// 取得訂單內總金額
+function getTurnover()
+{
+    global $conn;
+    $sql = 'SELECT `total_price`, `datetime` FROM `order_details`';
+    $stmt = $conn->prepare($sql);
+    $stmt->execute();
+    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    echo json_encode($data);
+}
+
+/* 營業額 -> 結束 */

@@ -204,7 +204,7 @@ CREATE TABLE `screening_seats` (
   `datetime`  TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY (`scr_seats_number`),
-  INDEX (`seatName`)
+  INDEX (`seat_name`)
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 INSERT INTO courts (seats_number,name) VALUES (280,'1廳'),(200,'2廳'),(153,'3廳');
