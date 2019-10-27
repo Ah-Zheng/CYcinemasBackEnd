@@ -36,6 +36,9 @@ switch($method){
             case 'testOrderSeat':
                 testOrderSeat();
                 break;
+            case 'getCountDownTime':
+                getCountDownTime();
+                break;
 
             default:
                 break;
@@ -402,7 +405,7 @@ function lockScreeningSeat(){
         if(count($seatCompare)==0){
             $conn->beginTransaction();
 
-            $sql = "SELECT * FROM `screening_seats` WHERE `screenings_id` = '$screenings_id' AND `seat_name` IN ($seatName) AND `available` = 0 AND addtime(`datetime`,'00:01:00') <= now()";
+            $sql = "SELECT * FROM `screening_seats` WHERE `screenings_id` = '$screenings_id' AND `seat_name` IN ($seatName) AND `available` = 0 AND addtime(`datetime`,'00:03:10') <= now()";
             $checkNotAvailable = $conn->query($sql);
 
             $sql = "SELECT * FROM `screening_seats` WHERE `screenings_id` = '$screenings_id' AND `seat_name` IN ($seatName) AND `available` = 1";
@@ -442,4 +445,22 @@ function lockScreeningSeat(){
         echo "there are not enough seats.";
 }
 
+function getCountDownTime(){
+    global $conn;
+    $screenings_id = isset($_POST['screeningID'])?$_POST['screeningID']:'no post';
+    $choosedSeat = isset($_POST['choosedSeat'])?$_POST['choosedSeat']:'no post';
+
+    $seatName = str_replace(",","','",$choosedSeat);
+    $seatName = "'$seatName'";
+
+    $sql = "SELECT `datetime` FROM `screening_seats` WHERE `screenings_id` = '$screenings_id' AND `seat_name` IN ($seatName)";
+    $check = $conn->query($sql);
+    if($check){
+        $result = $check->fetch(PDO::FETCH_ASSOC);
+        echo $result['datetime'];
+    }else{
+        echo "nothing";
+    }
+
+}
 ?>
