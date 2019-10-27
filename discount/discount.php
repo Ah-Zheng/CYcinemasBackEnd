@@ -10,7 +10,11 @@ $url = explode('/', rtrim($_GET['url'], '/'));
 
 switch ($method) {
     case 'GET':
-            getDiscountData($url[0]);
+            if($url[0]=="getNowDiscountData"){
+                getNowDiscountData();
+            }else{
+                getDiscountData($url[0]);
+            }
         break;
     case 'POST':
         if ($url['0'] == '') {
@@ -45,6 +49,21 @@ function getDiscountData($discountId = '')
     $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     echo json_encode($data);
+}
+//獲取在時間內的折扣
+function getNowDiscountData()
+{
+    global $conn;
+    $sql = 'SELECT * FROM `total_price_discount` WHERE now() BETWEEN `start_time` and `end_time`';
+    $stmt = $conn->query($sql);
+    if($stmt){
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        echo json_encode($data);
+    }else{
+        $error = $conn->errorInfo();
+        echo "查詢失敗，錯誤訊息：".$error[2];
+    }
+
 }
 
 // 新增折扣
