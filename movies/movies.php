@@ -115,7 +115,7 @@ function updateMovies($movieId)
 {
     global $conn;
     $movieId = intval($movieId);
-    $movie = isset($_POST['movieDatas']);
+    $movie = isset($_POST['movieDatas']) ? json_decode($_POST['movieDatas']) : '';
     $sql = 'UPDATE `movies` SET `name` = :movieName, `actor` = :actor, `genre` = :genre, `rating` = :rating, `run_time` = :runTime, `play_date` = :playDate, `info` = :info WHERE `id` = :movieId';
     $stmt = $conn->prepare($sql);
     $stmt->bindParam(':movieName', $movie->name);
